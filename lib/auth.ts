@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
+import authConfig from "@/auth.config";
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -12,10 +13,7 @@ const credentialsSchema = z.object({
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/sign-in",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -49,20 +47,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.username = (user as { username?: string }).username ?? "";
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.username = token.username as string;
-      }
-      return session;
-    },
-  },
 });
