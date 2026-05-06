@@ -4,6 +4,8 @@ export interface IPost {
   author: mongoose.Types.ObjectId;
   content: string;
   likeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const postSchema = new Schema<IPost>(
