@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
+import "@/models/Post";
+import "@/models/Follow";
+import "@/models/Like";
 
 const READY_STATES: Record<number, string> = {
   0: "disconnected",
