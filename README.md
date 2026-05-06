@@ -1,5 +1,10 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Documentation
+
+- **[AGENTS.md](AGENTS.md)** — conventions and pointers for contributors and AI agents.
+- **[docs/PLAN.md](docs/PLAN.md)** — roadmap, todos, architecture, decisions, and gotchas (canonical; lives in-repo).
+
 ## Getting Started
 
 First, run the development server:
