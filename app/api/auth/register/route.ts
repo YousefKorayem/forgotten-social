@@ -1,20 +1,9 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
 
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
-
-const registerSchema = z.object({
-  username: z
-    .string()
-    .min(3)
-    .max(20)
-    .regex(/^[a-z0-9_]+$/, "Username must be lowercase alphanumeric or underscore"),
-  email: z.email(),
-  password: z.string().min(8).max(100),
-  name: z.string().min(1).max(50),
-});
+import { registerSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
   let body: unknown;
