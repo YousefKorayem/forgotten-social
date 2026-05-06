@@ -31,10 +31,6 @@
 
 ---
 
-**Convention:** Newest first. Keep entries factual: branch, commits, files, behavior, follow-ups.
-
----
-
 ### 2026-05-07 — Merge: `feat/auth-credentials` → `main`
 
 - **Outcome:** PR merged successfully (regular merge). Includes auth UI work + `chore(docs)` commit(s) on the same branch.
