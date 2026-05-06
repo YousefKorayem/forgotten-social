@@ -6,6 +6,13 @@
 
 ---
 
+### 2026-05-07 — Merge: `feat/auth-credentials` → `main`
+
+- **Outcome:** PR merged successfully (regular merge). Includes auth UI work + `chore(docs)` commit(s) on the same branch.
+- **Local git:** Run `git checkout main` and `git pull origin main` so your machine matches GitHub; then delete the old feature branch if you like (`git branch -d feat/auth-credentials`).
+
+---
+
 ### 2026-05-07 — Auth UI: sign-in / sign-up, UserNav, shared validation
 
 - **Branch:** `feat/auth-credentials`
@@ -59,7 +66,7 @@
 - Optional: investigate dev-only hydration mismatch with theme / layout if it persists for users.
 - PR opened by maintainer after review (not created by agent).
 
-**PR / link:** _none — user opens PR_
+**PR / link:** Merged to `main` (add your GitHub PR URL here if you want it on record).
 
 ---
 
