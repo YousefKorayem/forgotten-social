@@ -62,8 +62,9 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Done:** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Details: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **Next:** Merge `feat/auth-credentials` when reviewed; then `posts-api` / `feed-ui`. OAuth providers (GitHub/Google) remain deferred — see todo `auth`.
+- **Merged to `main`:** Credentials auth end-to-end (register, sign-in/up, session, `UserNav`) plus handoff docs (`docs/PLAN.md`, `notes/agent-reports.md`, README pointers). PR merged with regular merge as preferred.
+- **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
+- **Next slice:** **`posts-api`** — `POST /api/posts` (create, auth required) and `GET /api/posts` (global feed, cursor-paginated). Then **`feed-ui`** (home composer, `PostCard`, infinite scroll). OAuth (GitHub/Google) remains deferred — todo `auth` stays open for that; optionally tighten `proxy.ts` protected routes when post mutations exist.
 - **Agent handoff:** Read [`AGENTS.md`](../AGENTS.md) first, then [`notes/agent-reports.md`](../notes/agent-reports.md), then this file (`docs/PLAN.md`).
 
 ## Decisions log
