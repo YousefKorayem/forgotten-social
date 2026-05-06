@@ -4,6 +4,12 @@
 
 ---
 
+### 2026-05-07 — Merge: `feat/posts-api` → `main`
+
+- **Outcome:** Posts API PR merged (regular merge). `main` includes `POST`/`GET` `/api/posts`, validation, cursor pagination; see entry below for implementation detail.
+
+---
+
 ### 2026-05-07 — Posts API: `POST/GET /api/posts`
 
 - **Branch:** `feat/posts-api`
