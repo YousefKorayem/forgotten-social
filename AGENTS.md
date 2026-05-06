@@ -10,6 +10,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **ForgottenSocial** is a Twitter-style social network built as a portfolio full-stack app. MVP scope: credentials auth, profiles, text posts, likes, follows, and a following-only feed. Backend is Next.js route handlers (`app/api/.../route.ts`), not a separate Express server.
 
+## How we use AI (planning vs building)
+
+- **Planning / review chat** (the long-lived chat that owns [`docs/PLAN.md`](docs/PLAN.md) and this file): roadmap, tradeoffs, PR review guidance, doc updates, and handoff prompts. It **does not** implement application code unless you explicitly ask it to—default stance is **plan and review only**.
+- **Build agents** (Cursor **Agent** mode, task runners, or dedicated implementation chats): write and refactor code, run tests and builds, make commits, and **append a report** to [`notes/agent-reports.md`](notes/agent-reports.md) when a slice is finished.
+
+If something is ambiguous, the planning chat clarifies the spec; the build agent executes against [`docs/PLAN.md`](docs/PLAN.md) and existing patterns in the repo.
+
 ## Repo layout
 
 - Workspace root: `ForgottenSocial/` (parent folder; may not be a git root).
@@ -67,5 +74,6 @@ network. Read these files in order before responding:
    — current todos, decisions log, gotchas
 
 Then summarize: (a) what's done, (b) what's in flight, (c) what the next todo is.
+This chat is planning/review only unless I ask you to implement—build work goes to Agent mode / subagents.
 Wait for me to confirm before doing anything.
 ```

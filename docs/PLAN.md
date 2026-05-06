@@ -25,7 +25,7 @@ todos:
     status: in_progress
   - id: posts-api
     content: Implement POST /api/posts (create) and GET /api/posts (global feed, cursor-paginated)
-    status: pending
+    status: completed
   - id: feed-ui
     content: Build home page with composer, FeedList client component, PostCard, infinite scroll for global feed
     status: pending
@@ -49,6 +49,8 @@ isProject: false
 
 > **Source of truth:** This file is the canonical roadmap (todos, architecture, decisions, gotchas). It lives in the repo so contributors and AI agents do not need Cursor’s `.cursor/plans/` directory.
 
+> **Collaboration:** The maintainer uses a **planning / review** chat to update this file and sequence work; **implementation** runs in separate Agent-mode or subagent sessions that follow this plan and report in [`notes/agent-reports.md`](../notes/agent-reports.md).
+
 # ForgottenSocial — Full-Stack Plan
 
 ## Stack (locked in)
@@ -64,8 +66,8 @@ isProject: false
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
 - **Merged to `main`:** Credentials auth end-to-end (register, sign-in/up, session, `UserNav`) plus handoff docs (`docs/PLAN.md`, `notes/agent-reports.md`, README pointers). PR merged with regular merge as preferred.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **Next slice:** **`posts-api`** — `POST /api/posts` (create, auth required) and `GET /api/posts` (global feed, cursor-paginated). Then **`feed-ui`** (home composer, `PostCard`, infinite scroll). OAuth (GitHub/Google) remains deferred — todo `auth` stays open for that; optionally tighten `proxy.ts` protected routes when post mutations exist.
-- **Agent handoff:** Read [`AGENTS.md`](../AGENTS.md) first, then [`notes/agent-reports.md`](../notes/agent-reports.md), then this file (`docs/PLAN.md`).
+- **Done:** **`posts-api`** — `POST /api/posts` (create, auth required) and `GET /api/posts` (global feed, cursor-paginated); implemented on `feat/posts-api` (open PR / merge to `main` when ready). **Next slice:** **`feed-ui`** (home composer, `PostCard`, infinite scroll). OAuth (GitHub/Google) remains deferred — todo `auth` stays open for that; optionally tighten `proxy.ts` protected routes when post mutations exist.
+- **Agent handoff:** Read [`AGENTS.md`](../AGENTS.md) first (includes **planning vs build** roles), then [`notes/agent-reports.md`](../notes/agent-reports.md), then this file (`docs/PLAN.md`).
 
 ## Decisions log
 
