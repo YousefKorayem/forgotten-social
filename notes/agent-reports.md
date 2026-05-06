@@ -1,8 +1,33 @@
 # Agent reports (interim handoff log)
 
-**Purpose:** After a subagent (or long Agent-mode run) finishes a labor-intensive slice, **append a new entry at the top** of this file. Planning chats with a fresh context window should read this (plus [`AGENTS.md`](../AGENTS.md) and [`docs/PLAN.md`](../docs/PLAN.md)) before continuing.
+**Purpose:** After a **build agent** (Agent mode / subagent—not the planning chat) finishes a labor-intensive slice, **append a new entry at the top** of this file. **Planning / review** chats edit roadmap docs only by default; they read this log plus [`AGENTS.md`](../AGENTS.md) and [`docs/PLAN.md`](../docs/PLAN.md) to stay aligned.
 
-**Convention:** Newest first. Keep entries factual: branch, commits, files, behavior, follow-ups.
+---
+
+### 2026-05-07 — Posts API: `POST/GET /api/posts`
+
+- **Branch:** `feat/posts-api`
+- **Commits:** `90a5613` (posts route), `e02356a` (Post `IPost` timestamps); plus `docs: agent report for posts-api` on the same branch — pushed to `origin/feat/posts-api`
+- **Scope:** Implement global feed and create post per [`docs/PLAN.md`](../docs/PLAN.md) (`posts-api`). `POST` requires session; body `{ content }` validated with Zod; `GET` returns newest-first feed with `cursor` (ObjectId) and optional `limit` (default 20, max 50). Runtime explicitly Node for Mongoose.
+
+**Files created**
+
+- `lib/validations/post.ts` — `createPostSchema` (trimmed content, 1–280 chars)
+- `app/api/posts/route.ts` — `POST` (201 + `{ post }`), `GET` (`{ posts, nextCursor }`)
+
+**Files modified**
+
+- `models/Post.ts` — `IPost` includes `createdAt` / `updatedAt` so populated lean documents match Mongoose timestamps
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — completed successfully; route list includes `ƒ /api/posts`
+
+**Follow-ups**
+
+- `feed-ui`: composer, `PostCard`, infinite scroll against `nextCursor`
+- Optional: tighten `proxy.ts` for `POST /api/posts` if mutations should be enforced at the edge
 
 ---
 
