@@ -8,7 +8,7 @@
 
 - **Branch:** `feat/posts-api`
 - **Commits:** `90a5613` (posts route), `e02356a` (Post `IPost` timestamps); plus `docs: agent report for posts-api` on the same branch — pushed to `origin/feat/posts-api`
-- **Scope:** Implement global feed and create post per [`docs/PLAN.md`](../docs/PLAN.md) (`posts-api`). `POST` requires session; body `{ content }` validated with Zod; `GET` returns newest-first feed with `cursor` (ObjectId) and `limit` (1–20 default 20). Runtime explicitly Node for Mongoose.
+- **Scope:** Implement global feed and create post per [`docs/PLAN.md`](../docs/PLAN.md) (`posts-api`). `POST` requires session; body `{ content }` validated with Zod; `GET` returns newest-first feed with `cursor` (ObjectId) and optional `limit` (default 20, max 50). Runtime explicitly Node for Mongoose.
 
 **Files created**
 
