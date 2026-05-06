@@ -7,7 +7,7 @@
 ### 2026-05-07 — Feed UI: home feed, composer, infinite scroll
 
 - **Branch:** `feat/feed-ui`
-- **Commits:** (after push — see `git log feat/feed-ui`)
+- **Commits:** `95c177c` (feed UI); docs entry committed after on `feat/feed-ui`
 - **Scope:** Implement [`docs/PLAN.md`](../docs/PLAN.md) **feed-ui**: replace boilerplate `app/page.tsx` with a max-width (`max-w-xl`) home column inside existing layout header/footer; **Composer** (client, `useSession`) posts JSON `{ content }` to `POST /api/posts`, prepends created post into **FeedList**; **PostCard** (author, optional avatar, short relative time, content, heart + like count placeholder); **FeedList** loads `GET /api/posts?limit=20`, cursor pagination via `nextCursor`, intersection-observer infinite scroll plus **Load more**, loading/error/empty states; 401 shows destructive alert + sign-in link/prompt (aligned with sign-up form fetch/error patterns); Lyra/Zinc + Phosphor on client via `@phosphor-icons/react`.
 
 **Files created**
