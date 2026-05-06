@@ -4,6 +4,34 @@
 
 ---
 
+### 2026-05-07 — Feed UI: home feed, composer, infinite scroll
+
+- **Branch:** `feat/feed-ui`
+- **Commits:** (after push — see `git log feat/feed-ui`)
+- **Scope:** Implement [`docs/PLAN.md`](../docs/PLAN.md) **feed-ui**: replace boilerplate `app/page.tsx` with a max-width (`max-w-xl`) home column inside existing layout header/footer; **Composer** (client, `useSession`) posts JSON `{ content }` to `POST /api/posts`, prepends created post into **FeedList**; **PostCard** (author, optional avatar, short relative time, content, heart + like count placeholder); **FeedList** loads `GET /api/posts?limit=20`, cursor pagination via `nextCursor`, intersection-observer infinite scroll plus **Load more**, loading/error/empty states; 401 shows destructive alert + sign-in link/prompt (aligned with sign-up form fetch/error patterns); Lyra/Zinc + Phosphor on client via `@phosphor-icons/react`.
+
+**Files created**
+
+- `types/feed.ts` — `FeedPost`, API response shapes
+- `lib/format-relative-time.ts` — compact relative labels for `createdAt` ISO strings
+- `components/post-card.tsx`, `components/composer.tsx`, `components/feed-list.tsx`, `components/home-feed.tsx` — feed shell wiring prepend-on-create
+
+**Files modified**
+
+- `app/page.tsx` — home layout + `HomeFeed`
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — completed successfully
+
+**Follow-ups**
+
+- **`profile`:** `/[username]` route so post header links are not 404
+- **Like API + `LikeButton`:** replace heart placeholder counts with real interaction
+
+---
+
 ### 2026-05-07 — Merge: `feat/posts-api` → `main`
 
 - **Outcome:** Posts API PR merged (regular merge). `main` includes `POST`/`GET` `/api/posts`, validation, cursor pagination; see entry below for implementation detail.

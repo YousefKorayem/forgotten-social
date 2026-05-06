@@ -1,0 +1,158 @@
+"use client";
+
+import { PaperPlaneTiltIcon, SignInIcon } from "@phosphor-icons/react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type { FeedPost, PostCreateApiResponse } from "@/types/feed";
+
+type ComposerProps = {
+  onPostCreated?: (post: FeedPost) => void;
+};
+
+type ErrorBody = {
+  error?: string;
+};
+
+export function Composer({ onPostCreated }: ComposerProps) {
+  const { data: session, status } = useSession();
+  const [content, setContent] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const signedIn = status === "authenticated" && !!session?.user;
+  const callbackUrl =
+    typeof window !== "undefined" ? encodeURIComponent(window.location.pathname || "/") : "/";
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitError(null);
+
+    const trimmed = content.trim();
+    if (!trimmed || submitting) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: trimmed }),
+      });
+
+      let body: PostCreateApiResponse | ErrorBody | null = null;
+      try {
+        body = (await res.json()) as PostCreateApiResponse | ErrorBody;
+      } catch {
+        setSubmitError("Something went wrong. Please try again.");
+        return;
+      }
+
+      if (res.status === 401) {
+        setSubmitError("You need to sign in to post.");
+        return;
+      }
+
+      if (!res.ok) {
+        const err = body as ErrorBody;
+        setSubmitError(err.error ?? "Could not publish your post.");
+        return;
+      }
+
+      const created = (body as PostCreateApiResponse).post;
+      if (created) {
+        setContent("");
+        onPostCreated?.(created);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (status === "loading") {
+    return (
+      <Card className="border-dashed">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Compose</CardTitle>
+          <CardDescription>Loading session…</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (!signedIn) {
+    return (
+      <Card className="border-dashed">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Join the conversation</CardTitle>
+          <CardDescription>
+            Sign in to share a post with the global feed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild>
+            <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>
+              <SignInIcon className="size-4" weight="regular" />
+              Sign in
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">Compose</CardTitle>
+        <CardDescription>What&apos;s on your mind? (max 280 characters)</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {submitError ? (
+          <Alert variant="destructive">
+            <SignInIcon size={16} weight="regular" />
+            <AlertDescription className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span>{submitError}</span>
+              {submitError.includes("sign in") ? (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>Sign in</Link>
+                </Button>
+              ) : null}
+            </AlertDescription>
+          </Alert>
+        ) : null}
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="compose-content" className="sr-only">
+              Post content
+            </Label>
+            <Textarea
+              id="compose-content"
+              rows={3}
+              maxLength={280}
+              placeholder="Write something memorable…"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              disabled={submitting}
+              className="resize-y min-h-20 text-sm md:text-sm"
+            />
+            <div className="flex justify-end text-xs text-muted-foreground tabular-nums">
+              {content.length}/280
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={submitting || !content.trim()}>
+              <PaperPlaneTiltIcon className="size-4" weight="regular" />
+              Post
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
