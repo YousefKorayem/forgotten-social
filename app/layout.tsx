@@ -5,6 +5,7 @@ import Link from "next/link";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UserNav } from "@/components/user-nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
                 ForgottenSocial
               </Link>
               <div className="flex items-center gap-2">
+                <UserNav />
                 <ThemeToggle />
               </div>
             </div>
