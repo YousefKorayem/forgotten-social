@@ -8,7 +8,7 @@ export default function Home() {
           Home
         </h1>
         <p className="text-sm text-muted-foreground">
-          Global feed — newest posts from everyone.
+          Newest posts — switch to Following when signed in for your timeline.
         </p>
       </div>
       <HomeFeed />

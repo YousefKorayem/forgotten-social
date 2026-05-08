@@ -10,17 +10,17 @@ import {
   parseCursorParam,
   serializePost,
 } from "@/lib/post-feed-shared";
+import Follow from "@/models/Follow";
 import Like from "@/models/Like";
 import Post from "@/models/Post";
-import { createPostSchema } from "@/lib/validations/post";
 
 export const runtime = "nodejs";
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
     await dbConnect();
   } catch (error) {
-    console.error("[posts POST] dbConnect", error);
+    console.error("[posts/feed GET] dbConnect", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 
@@ -29,56 +29,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
-
-  const parsed = createPostSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten() },
-      { status: 400 }
-    );
-  }
-
-  try {
-    const post = await Post.create({
-      author: new mongoose.Types.ObjectId(session.user.id),
-      content: parsed.data.content,
-    });
-
-    const created = await Post.findById(post._id)
-      .populate<{ username: string; name: string; image?: string }>({
-        path: "author",
-        select: "username name image",
-      })
-      .lean()
-      .exec();
-
-    if (!created) {
-      return NextResponse.json({ error: "Server error" }, { status: 500 });
-    }
-
-    return NextResponse.json(
-      { post: serializePost(created as unknown as LeanPost, false) },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("[posts POST]", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
-}
-
-export async function GET(request: Request) {
-  try {
-    await dbConnect();
-  } catch (error) {
-    console.error("[posts GET] dbConnect", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
+  const viewerId = new mongoose.Types.ObjectId(session.user.id);
 
   const { searchParams } = new URL(request.url);
   const cursorResult = parseCursorParam(searchParams.get("cursor"));
@@ -101,16 +52,25 @@ export async function GET(request: Request) {
   }
 
   try {
-    const session = await auth();
-    const viewerId =
-      session?.user?.id != null
-        ? new mongoose.Types.ObjectId(session.user.id)
-        : null;
+    const followRows = await Follow.find({ follower: viewerId })
+      .select("following")
+      .lean()
+      .exec();
 
-    const filter =
-      cursorResult.cursorId != null
-        ? { _id: { $lt: cursorResult.cursorId } }
-        : {};
+    const followingIds = followRows.map(
+      (f) => f.following as mongoose.Types.ObjectId
+    );
+
+    if (followingIds.length === 0) {
+      return NextResponse.json({ posts: [], nextCursor: null });
+    }
+
+    const filter: Record<string, unknown> = {
+      author: { $in: followingIds },
+    };
+    if (cursorResult.cursorId != null) {
+      filter._id = { $lt: cursorResult.cursorId };
+    }
 
     const items = (await Post.find(filter)
       .sort({ _id: -1 })
@@ -128,7 +88,7 @@ export async function GET(request: Request) {
       hasMore && page.length > 0 ? page[page.length - 1]._id.toString() : null;
 
     let likedIds = new Set<string>();
-    if (viewerId != null && page.length > 0) {
+    if (page.length > 0) {
       const postIds = page.map((p) => p._id);
       const likes = await Like.find({
         user: viewerId,
@@ -144,12 +104,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       posts: page.map((doc) =>
-        serializePost(doc, viewerId != null ? likedIds.has(doc._id.toString()) : undefined)
+        serializePost(doc, likedIds.has(doc._id.toString()))
       ),
       nextCursor,
     });
   } catch (error) {
-    console.error("[posts GET]", error);
+    console.error("[posts/feed GET]", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

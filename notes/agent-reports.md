@@ -4,6 +4,37 @@
 
 ---
 
+### 2026-05-08 — Following feed API + home tabs
+
+- **Branch:** `feat/following-feed`
+- **Scope:** Implement [`docs/PLAN.md`](../docs/PLAN.md) **`following-feed`**: **`GET`** **`/api/posts/feed`** (`app/api/posts/feed/route.ts`) — **`runtime`** **`nodejs`**, **`dbConnect()`**, **`auth()`** required (**401** if unsigned); resolve viewer **`ObjectId`**; **`Follow.find({ follower })`** → **`following`** ids; empty → **`{ posts: [], nextCursor: null }`**; else **`Post.find({ author: { $in } })`** newest-first (**`_id`** desc), cursor + limit aligned with **`GET`** **`/api/posts`** (**400** invalid cursor); batch **`likedByMe`** like global feed. Shared serialization/cursor/limit in **`lib/post-feed-shared.ts`** + **`lib/feed-constants.ts`**; **`app/api/posts/route.ts`** refactored to import helpers. **Home:** shadcn **`Tabs`** (**variant** **`line`**) **For you** vs **Following**; **For you** keeps **Composer** + inject-post **`FeedList`** on **`/api/posts`**; **Following** uses **`FeedList`** **`apiPath`** **`/api/posts/feed`** (composer omitted). Signed-out users: **Following** tab hidden (single-column global feed only).
+
+**Files created**
+
+- `app/api/posts/feed/route.ts`
+- `lib/post-feed-shared.ts`
+- `lib/feed-constants.ts`
+- `components/ui/tabs.tsx` (shadcn)
+
+**Files modified**
+
+- `app/api/posts/route.ts` — shared feed helpers
+- `components/feed-list.tsx` — **`apiPath`**, optional empty copy
+- `components/home-feed.tsx` — tabs + following **`FeedList`**
+- `app/page.tsx` — home blurb
+- `docs/PLAN.md` — **`following-feed`** completed
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — success; route **`ƒ /api/posts/feed`**
+
+**Follow-ups**
+
+- **`polish`** per plan
+
+---
+
 ### 2026-05-08 — Like API + `LikeButton`
 
 - **Branch:** `feat/like-api`
