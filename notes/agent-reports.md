@@ -4,6 +4,29 @@
 
 ---
 
+### 2026-05-08 — Profile page: server-rendered `/[username]`
+
+- **Branch:** `feat/profile-page`
+- **Commits:** `7d7ee09` (`feat(profile): add server-rendered profile page`); this report entry committed after on the same branch
+- **Scope:** Implement [`docs/PLAN.md`](../docs/PLAN.md) **profile** slice: server-rendered dynamic profile route resolves `User.username` case-insensitively via lowercase route segment, returns `notFound()` for missing users, selects only public user fields (`username`, `name`, `image`, `bio`), counts followers/following from `Follow`, and renders the latest 20 authored posts through the shared feed post serializer and existing `PostCard`.
+
+**Files created**
+
+- `app/[username]/page.tsx` — profile header, avatar/bio block, counts row, empty state, latest posts list
+- `lib/serialize-feed-post.ts` — shared `FeedPost` serialization reused by `app/api/posts/route.ts` and the profile page
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — completed successfully; route list includes `ƒ /[username]`
+
+**Follow-ups**
+
+- `follow`: replace the non-interactive follow placeholder once follow/unfollow API and `FollowButton` exist
+- `like`: replace `PostCard` heart/count placeholder with `LikeButton`
+
+---
+
 ### 2026-05-07 — Merge: `feat/feed-ui` → `main`
 
 - **Outcome:** Feed UI PR merged (regular merge). `main` includes home feed, composer, infinite scroll; next priority per prior report: **`profile`** (`/[username]`).
