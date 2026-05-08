@@ -4,6 +4,12 @@
 
 ---
 
+### 2026-05-07 — Merge: `feat/feed-ui` → `main`
+
+- **Outcome:** Feed UI PR merged (regular merge). `main` includes home feed, composer, infinite scroll; next priority per prior report: **`profile`** (`/[username]`).
+
+---
+
 ### 2026-05-07 — Feed UI: home feed, composer, infinite scroll
 
 - **Branch:** `feat/feed-ui`

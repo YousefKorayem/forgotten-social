@@ -37,6 +37,7 @@ If something is ambiguous, the planning chat clarifies the spec; the build agent
 - **Branches**: short-lived feature branches (`feat/...`, `chore/...`) + PRs into `main`.
 - **Commits**: conventional commits where practical.
 - **Merges**: **regular merge commits** into `main` (no squash) — preserves verbose history for review and portfolio narrative.
+- **After a PR merges:** Update local `main` (`git checkout main`, then `git pull origin main`), then remove the local feature branch if you no longer need it: `git branch -d <branch-name>` (safe delete if Git sees it as merged). Use `git branch -D <branch-name>` only if you intentionally force-delete despite Git’s warning.
 - **Secrets**: never commit `.env.local`. Required vars include `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL` (see README when present).
 
 ## Pointers (read before large changes)

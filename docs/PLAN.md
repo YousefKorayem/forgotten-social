@@ -28,10 +28,10 @@ todos:
     status: completed
   - id: feed-ui
     content: Build home page with composer, FeedList client component, PostCard, infinite scroll for global feed
-    status: in_progress
+    status: completed
   - id: profile
     content: Build /[username] profile page with avatar, bio, post list, follower/following counts (server-rendered)
-    status: pending
+    status: in_progress
   - id: follow
     content: Implement follow/unfollow API route and FollowButton client component; ensure idempotent on duplicate-key
     status: pending
@@ -64,10 +64,10 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Merged to `main`:** Credentials auth end-to-end (register, sign-in/up, session, `UserNav`); handoff docs (`docs/PLAN.md`, `notes/agent-reports.md`, README pointers); **`posts-api`** (`POST`/`GET` `/api/posts`, cursor feed, Node runtime). PRs merged with regular merge as preferred.
+- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`** (home feed: `Composer`, `FeedList`, `PostCard`, infinite scroll / load more, `types/feed.ts`). PRs merged with **regular merge** as preferred.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **In progress:** **`feed-ui`** — replace the default `app/page.tsx` with a feed home: composer (client; `POST /api/posts` when signed in), `PostCard`, `FeedList` with infinite scroll using `GET /api/posts` + `nextCursor`. Optional empty state when signed out or no posts.
-- **Next after feed-ui:** **`profile`** (`/[username]`), then **`follow`** / **`like`** APIs + buttons, then **`following-feed`** tab + API. OAuth (GitHub/Google) remains deferred — todo `auth` stays open.
+- **In progress:** **`profile`** — dynamic route `/[username]` (server-rendered): avatar, bio, user’s posts, follower/following counts (once follow API exists). Makes `PostCard` author links resolve instead of 404.
+- **Next after profile:** **`follow`** / **`like`** APIs + UI (`FollowButton`, `LikeButton`), then **`following-feed`** tab + `GET /api/posts/feed`. OAuth (GitHub/Google) remains deferred — todo `auth` stays open.
 - **Agent handoff:** Read [`AGENTS.md`](../AGENTS.md) first (includes **planning vs build** roles), then [`notes/agent-reports.md`](../notes/agent-reports.md), then this file (`docs/PLAN.md`).
 
 ## Decisions log
