@@ -1,10 +1,12 @@
 import { NewspaperIcon } from "@phosphor-icons/react/ssr";
-import type { Types } from "mongoose";
+import mongoose, { type Types } from "mongoose";
 import { notFound } from "next/navigation";
 
+import { FollowButton } from "@/components/follow-button";
 import { PostCard } from "@/components/post-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import {
   serializePost,
@@ -60,6 +62,20 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound();
   }
 
+  const session = await auth();
+  const viewerUsername = session?.user?.username ?? null;
+  const isOwnProfile =
+    viewerUsername != null && viewerUsername === user.username;
+  const showFollowButton = !!session?.user?.id && !isOwnProfile;
+
+  let initialFollowing = false;
+  if (session?.user?.id && !isOwnProfile) {
+    initialFollowing = !!(await Follow.exists({
+      follower: new mongoose.Types.ObjectId(session.user.id),
+      following: user._id,
+    }));
+  }
+
   const [followersCount, followingCount, posts] = await Promise.all([
     Follow.countDocuments({ following: user._id }),
     Follow.countDocuments({ follower: user._id }),
@@ -90,9 +106,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 {initials(user.name, user.username)}
               </AvatarFallback>
             </Avatar>
-            <div className="rounded-full border border-dashed border-border px-3 py-1 text-xs text-muted-foreground">
-              Follow button coming soon
-            </div>
+            <FollowButton
+              profileUsername={user.username}
+              initialFollowing={initialFollowing}
+              visible={showFollowButton}
+            />
           </div>
 
           <div className="space-y-2">
