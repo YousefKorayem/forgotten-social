@@ -4,6 +4,12 @@
 
 ---
 
+### 2026-05-08 — Merge: `feat/follow-api` → `main`
+
+- **Outcome:** Follow PR merged (regular merge). `main` includes `/api/users/[username]/follow` and **`FollowButton`**. **Next build slice:** **`like`** (API + **`LikeButton`**).
+
+---
+
 ### 2026-05-08 — Follow API + `FollowButton`
 
 - **Branch:** `feat/follow-api`

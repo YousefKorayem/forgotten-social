@@ -64,10 +64,9 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`**. After you merge PR **`feat/follow-api`**, **`follow`** (`/api/users/[username]/follow`, `FollowButton`) is on `main` too — then extend this bullet (and run `git pull origin main`). PRs merged with **regular merge** as preferred.
+- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`**; **`follow`** (`POST`/`DELETE` `/api/users/[username]/follow`, **`FollowButton`** on profiles). PRs merged with **regular merge** as preferred. Run `git pull origin main` on each machine.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **In progress:** **`like`** API + **`LikeButton`**, then **`following-feed`**. OAuth deferred — todo **`auth`** open.
-- **Done (slice):** **`follow`** — `POST`/`DELETE` `/api/users/[username]/follow` (session required; duplicate-key on follow treated as success; idempotent `DELETE` → **204** when target exists). **`FollowButton`** on profile with optimistic toggle + `router.refresh()` for counts.
+- **In progress:** **`like`** — like/unlike API (`Like` collection + `$inc` on **`Post.likeCount`**), **`LikeButton`** on **`PostCard`** (replace heart placeholder). Then **`following-feed`** (`GET /api/posts/feed` + home tab). OAuth deferred — todo **`auth`** open.
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
