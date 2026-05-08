@@ -4,6 +4,35 @@
 
 ---
 
+### 2026-05-08 — Like API + `LikeButton`
+
+- **Branch:** `feat/like-api`
+- **Scope:** Implement [`docs/PLAN.md`](../docs/PLAN.md) **like** slice: **`POST`** / **`DELETE`** [`app/api/posts/[id]/like/route.ts`](../app/api/posts/[id]/like/route.ts) with **`runtime = "nodejs"`**, **`dbConnect()`**, **`auth()`**, **`Like`** compound unique **`{ user, post }`**. **Like** create then **`Post.updateOne`** **`$inc`** **`likeCount`** **+1**; duplicate key **11000** on like treated as idempotent success (**200** + **`{ liked, likeCount }`**, aligned with follow duplicate handling). **Unlike:** **`Like.deleteOne`** then **`$inc`** **-1** only when a row was removed; **404** when post id invalid or post missing; **204** when post exists (idempotent whether or not a like row existed). **401** without session. **`FeedPost.likedByMe`** optional; **`GET /api/posts`** and profile **`/[username]`** batch-query **`Like`** for the signed-in viewer. **`LikeButton`** client component replaces **`PostCard`** heart placeholder (home **`FeedList`** + profile); optimistic like state and count; session loading skeleton; signed-out users get **Sign in** link on the control; **401** from API shows destructive alert + **Sign in** button.
+
+**Files created**
+
+- `app/api/posts/[id]/like/route.ts`
+- `components/like-button.tsx`
+
+**Files modified**
+
+- `types/feed.ts` — `likedByMe?` on **`FeedPost`**
+- `lib/serialize-feed-post.ts` — optional **`likedByMe`** on serialize
+- `app/api/posts/route.ts` — **`GET`** attaches **`likedByMe`**; **`POST`** create returns **`likedByMe: false`**
+- `app/[username]/page.tsx` — viewer **`Like`** lookup for profile posts
+- `components/post-card.tsx` — **`LikeButton`**
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — completed successfully; route list includes **`ƒ /api/posts/[id]/like`**
+
+**Follow-ups**
+
+- **`following-feed`:** **`GET /api/posts/feed`** + home tab per plan
+
+---
+
 ### 2026-05-08 — Merge: `feat/follow-api` → `main`
 
 - **Outcome:** Follow PR merged (regular merge). `main` includes `/api/users/[username]/follow` and **`FollowButton`**. **Next build slice:** **`like`** (API + **`LikeButton`**).

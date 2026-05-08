@@ -13,6 +13,7 @@ import {
   type LeanPostWithAuthor,
 } from "@/lib/serialize-feed-post";
 import Follow from "@/models/Follow";
+import Like from "@/models/Like";
 import Post from "@/models/Post";
 import User from "@/models/User";
 
@@ -92,7 +93,29 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const hasMorePosts = posts.length > POST_LIMIT;
   const visiblePosts = hasMorePosts ? posts.slice(0, POST_LIMIT) : posts;
-  const feedPosts = visiblePosts.map(serializePost);
+
+  let likedPostIds = new Set<string>();
+  if (session?.user?.id && visiblePosts.length > 0) {
+    const likes = await Like.find({
+      user: new mongoose.Types.ObjectId(session.user.id),
+      post: { $in: visiblePosts.map((p) => p._id) },
+    })
+      .select("post")
+      .lean()
+      .exec();
+    likedPostIds = new Set(
+      likes.map((l) => (l.post as mongoose.Types.ObjectId).toString())
+    );
+  }
+
+  const feedPosts = visiblePosts.map((doc) =>
+    serializePost(
+      doc,
+      session?.user?.id != null
+        ? likedPostIds.has(doc._id.toString())
+        : undefined
+    )
+  );
 
   return (
     <div className="mx-auto w-full max-w-xl pb-8">

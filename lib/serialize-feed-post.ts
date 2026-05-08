@@ -22,8 +22,8 @@ function toIsoString(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
 
-export function serializePost(doc: LeanPostWithAuthor): FeedPost {
-  return {
+export function serializePost(doc: LeanPostWithAuthor, likedByMe?: boolean): FeedPost {
+  const base: FeedPost = {
     id: doc._id.toString(),
     content: doc.content,
     likeCount: doc.likeCount,
@@ -36,4 +36,8 @@ export function serializePost(doc: LeanPostWithAuthor): FeedPost {
       image: doc.author.image ?? null,
     },
   };
+  if (likedByMe !== undefined) {
+    base.likedByMe = likedByMe;
+  }
+  return base;
 }

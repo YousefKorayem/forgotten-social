@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import Like from "@/models/Like";
 import Post from "@/models/Post";
 import { createPostSchema } from "@/lib/validations/post";
 
@@ -39,8 +40,8 @@ function serializeAuthor(author: PopulatedAuthor) {
   };
 }
 
-function serializePost(doc: LeanPost) {
-  return {
+function serializePost(doc: LeanPost, likedByMe?: boolean) {
+  const row = {
     id: doc._id.toString(),
     content: doc.content,
     likeCount: doc.likeCount,
@@ -48,6 +49,9 @@ function serializePost(doc: LeanPost) {
     updatedAt: doc.updatedAt.toISOString(),
     author: serializeAuthor(doc.author),
   };
+  return likedByMe === undefined
+    ? row
+    : { ...row, likedByMe };
 }
 
 function parseCursorParam(cursorParam: string | null):
@@ -110,7 +114,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { post: serializePost(created as unknown as LeanPost) },
+      { post: serializePost(created as unknown as LeanPost, false) },
       { status: 201 }
     );
   } catch (error) {
@@ -148,6 +152,12 @@ export async function GET(request: Request) {
   }
 
   try {
+    const session = await auth();
+    const viewerId =
+      session?.user?.id != null
+        ? new mongoose.Types.ObjectId(session.user.id)
+        : null;
+
     const filter =
       cursorResult.cursorId != null
         ? { _id: { $lt: cursorResult.cursorId } }
@@ -168,8 +178,25 @@ export async function GET(request: Request) {
     const nextCursor =
       hasMore && page.length > 0 ? page[page.length - 1]._id.toString() : null;
 
+    let likedIds = new Set<string>();
+    if (viewerId != null && page.length > 0) {
+      const postIds = page.map((p) => p._id);
+      const likes = await Like.find({
+        user: viewerId,
+        post: { $in: postIds },
+      })
+        .select("post")
+        .lean()
+        .exec();
+      likedIds = new Set(
+        likes.map((l) => (l.post as mongoose.Types.ObjectId).toString())
+      );
+    }
+
     return NextResponse.json({
-      posts: page.map(serializePost),
+      posts: page.map((doc) =>
+        serializePost(doc, viewerId != null ? likedIds.has(doc._id.toString()) : undefined)
+      ),
       nextCursor,
     });
   } catch (error) {
