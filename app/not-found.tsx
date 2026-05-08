@@ -8,8 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const session = await auth();
+
   return (
     <div className="mx-auto flex min-h-[55vh] w-full max-w-xl items-center justify-center py-10">
       <Card className="w-full border-dashed">
@@ -24,9 +27,15 @@ export default function NotFound() {
           <Button asChild className="w-full sm:w-auto">
             <Link href="/">Back to home</Link>
           </Button>
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href="/sign-in">Sign in</Link>
-          </Button>
+          {session?.user ? (
+            <Button variant="outline" asChild className="w-full sm:w-auto">
+              <Link href={`/${session.user.username}`}>Your profile</Link>
+            </Button>
+          ) : (
+            <Button variant="outline" asChild className="w-full sm:w-auto">
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>

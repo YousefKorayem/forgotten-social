@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { requireExistingUserBySessionUserId } from "@/lib/require-session-user";
 import Like from "@/models/Like";
 import Post from "@/models/Post";
 
@@ -33,13 +34,16 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const viewer = await requireExistingUserBySessionUserId(session.user.id);
+  if (!viewer.ok) return viewer.response;
+
   const { id: rawId } = await context.params;
   if (!mongoose.Types.ObjectId.isValid(rawId)) {
     return NextResponse.json({ error: "Invalid post id" }, { status: 400 });
   }
 
   const postId = new mongoose.Types.ObjectId(rawId);
-  const userId = new mongoose.Types.ObjectId(session.user.id);
+  const userId = viewer.userId;
 
   const postExists = await Post.exists({ _id: postId });
   if (!postExists) {
@@ -84,13 +88,16 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const viewer = await requireExistingUserBySessionUserId(session.user.id);
+  if (!viewer.ok) return viewer.response;
+
   const { id: rawId } = await context.params;
   if (!mongoose.Types.ObjectId.isValid(rawId)) {
     return NextResponse.json({ error: "Invalid post id" }, { status: 400 });
   }
 
   const postId = new mongoose.Types.ObjectId(rawId);
-  const userId = new mongoose.Types.ObjectId(session.user.id);
+  const userId = viewer.userId;
 
   const postExists = await Post.exists({ _id: postId });
   if (!postExists) {

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { signOutIfSessionExpiredPayload } from "@/lib/session-expired-client";
 import type { FeedPost, PostCreateApiResponse } from "@/types/feed";
 
 type ComposerProps = {
@@ -58,6 +59,12 @@ export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
       }
 
       if (res.status === 401) {
+        if (await signOutIfSessionExpiredPayload(body)) {
+          setSubmitError(
+            "Your session is no longer valid. Please sign in again."
+          );
+          return;
+        }
         setSubmitError("You need to sign in to post.");
         return;
       }

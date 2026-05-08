@@ -64,7 +64,7 @@ isProject: false
 - **Surfaces shipped:** `/` (composer + **For you** / **Following** tabs), `/sign-in`, `/sign-up`, `/[username]` profile, APIs under `app/api/` (`posts`, `posts/feed`, `posts/[id]/like`, `users/[username]/follow`, `auth/*`, `health`). Shared feed logic: `lib/post-feed-shared.ts`, `lib/feed-constants.ts`, `lib/serialize-feed-post.ts`.
 - **Env (local):** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL` — see [`README.md`](../README.md); never commit `.env.local`.
 - **Workflow:** Feature branches + PRs + **regular merge** to `main` (no squash). Build agents append [`notes/agent-reports.md`](../notes/agent-reports.md); planning agent edits this file + `AGENTS.md` only by default.
-- **Next conversations:** OAuth and/or `proxy.ts` hardening, deployment (Vercel + Atlas), portfolio README/screenshots — or declare “done” and freeze.
+- **Next conversations:** QA follow-ups from [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md), optional features from [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md), OAuth and/or `proxy.ts` hardening, deployment (Vercel + Atlas), portfolio README/screenshots — or declare “done” and freeze.
 
 ## Stack (locked in)
 
@@ -79,6 +79,7 @@ isProject: false
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
 - **Merged to `main` (MVP path):** Credentials auth + registration; **`posts-api`** / **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (tabs + `/api/posts/feed`); **`polish`** — README setup (**`MONGODB_URI`**, **`AUTH_SECRET`**, **`AUTH_URL`**), improved empty states, **`FeedList`** skeletons, composer feedback, **`app/not-found.tsx`**, responsive tweaks on composer/profile. In-repo roadmap: this file and [`AGENTS.md`](../AGENTS.md). PRs merged with **regular merge**; run **`git pull origin main`** on each clone after merges.
 - **Deferred (optional extensions):** **`auth`** — GitHub/Google OAuth (credentials-only shipped). **`middleware`** — tighten **`proxy.ts`** for write routes. Deploy (e.g. Vercel + Atlas) when ready — see README / Decisions log.
+- **QA / feature planning:** Manual QA bugs live in [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). New feature ideas and portfolio upgrades live in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
@@ -104,8 +105,33 @@ isProject: false
 - **Mongoose dev HMR:** Cache connection on **`globalThis`**, not `global`, in `lib/db.ts`.
 - **npm naming:** Package/project folder names must be lowercase (`forgotten-social`).
 - **PowerShell debugging:** `Invoke-RestMethod` may hide JSON error bodies on failures; use browser Network tab or `curl.exe` for full responses.
+- **Theme / Next.js 16 + Turbopack:** `next-themes` `ThemeProvider` injects an inline `<script>` via React; React 19 client rendering logs *Encountered a script tag while rendering React component* on routes such as `/_not-found`. This project uses a **`beforeInteractive`** `next/script` boot snippet (`lib/theme-boot-script.ts`) plus a small client **`ThemeProvider`** fork (`components/theme-provider.tsx`) so no `<script>` is rendered under the client provider tree. Do not reintroduce `next-themes` without checking whether this warning returns.
+- **`npm audit` — PostCSS (moderate, transitive via Next):** `postcss@<8.5.10` is nested under `next@16.2.x`. `npm audit fix --force` suggests an incorrect downgrade of Next; wait for a Next release that bundles fixed PostCSS (or overrides only if the team accepts the risk). Not addressed on `fix/qa-followups`.
+- **Browser Back sometimes shows a blank page (deferred):** QA saw intermittent blank content after client Back navigation (e.g. `/` → `/[username]` → Back, or `/sign-in` → `/` → Back). No reliable app-level fix was shipped in this branch; treat as possible Next.js 16 / Turbopack / router cache interaction. Reproduce with DevTools open (console + network), then reassess after a framework upgrade.
 
 > Note on Express: you originally listed Express, but chose "Next.js full-stack". In this setup, Next's route handlers (`app/api/.../route.ts`) replace Express. They use the same Request/Response mental model, so the backend skills still show. If you want to truly demo Express on your resume, we can split the backend out later — say the word and I'll add a `server/` Express+Mongoose API and have Next consume it instead.
+
+## Local dev utilities (untracked)
+
+These helpers live in the working tree but are intentionally **gitignored** (see [`.gitignore`](../.gitignore)) — they're per-machine dev tooling, not portfolio artifacts:
+
+- [`scripts/seed/`](../scripts/seed/) — Node scripts to generate, verify, and import deterministic seed data:
+  - `generate-seed.mjs` — writes the four `seed/forgotten_social.*.json` files (10 users, 85 posts, 264 likes, 44 follows). Re-run any time to refresh.
+  - `verify-seed.mjs` — schema/invariant check (24-hex `_id`s, ref integrity, compound uniqueness, `Post.likeCount` in sync with `Like` docs).
+  - `import-seed.mjs` — Mongoose-based importer; uses `node --env-file=.env.local` so no `mongoimport` / `mongosh` required.
+- [`seed/`](../seed/) — generated MongoDB Extended JSON dumps + `seed/README.md` with per-user stats and import commands.
+
+Quick start (from `forgotten-social/`, Node 20.6+):
+
+```bash
+node scripts/seed/generate-seed.mjs
+node scripts/seed/verify-seed.mjs
+node --env-file=.env.local scripts/seed/import-seed.mjs   # clears + imports all four collections
+```
+
+Default seed password for every account: `password123`. Override with `FORGOTTEN_SEED_PASSWORD` before regenerating.
+
+The companion **manual QA checklist** lives at [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) and **is** committed.
 
 ## Source control & GitHub
 
