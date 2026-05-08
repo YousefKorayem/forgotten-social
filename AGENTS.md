@@ -10,6 +10,17 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **ForgottenSocial** is a Twitter-style social network built as a portfolio full-stack app. MVP scope: credentials auth, profiles, text posts, likes, follows, and a following-only feed. Backend is Next.js route handlers (`app/api/.../route.ts`), not a separate Express server.
 
+## Snapshot for new chats (copy into memory before answering)
+
+Read **[`docs/PLAN.md`](docs/PLAN.md) § Snapshot for a fresh planning chat** for the full picture. Quick facts:
+
+- **Repo:** `forgotten-social/` — run `npm run dev` here.
+- **MVP status:** Core todos through **`polish`** are **done** on **`main`** (feeds, profile, follow, like, following tab, README polish, `not-found`).
+- **Deferred:** OAuth (**`auth`** todo), route protection (**`middleware`** / **`proxy.ts`**).
+- **Truth source:** YAML front-matter + § Current state + § Snapshot in [`docs/PLAN.md`](docs/PLAN.md); implementation history in [`notes/agent-reports.md`](notes/agent-reports.md).
+
+When the maintainer opens a **new** planning chat with an empty context window, **read those files first**—do not rely on an older chat’s summary.
+
 ## Planning agent vs build agents (mandatory split)
 
 These are **different roles**. Do not blur them.
@@ -90,10 +101,10 @@ Planning only: roadmap, docs, review guidance, and handoff prompts for Agent mod
 Do not implement app code (app/, components/, lib/* runtime code, models/, API routes) unless I explicitly ask you to.
 
 Read in order:
-1. forgotten-social/AGENTS.md
-2. forgotten-social/notes/agent-reports.md
-3. forgotten-social/docs/PLAN.md
+1. forgotten-social/AGENTS.md (including § Snapshot for new chats)
+2. forgotten-social/docs/PLAN.md — especially § Snapshot for a fresh planning chat + YAML todos + § Current state
+3. forgotten-social/notes/agent-reports.md — newest entries first
 
-Then summarize: (a) what's done, (b) what's in flight, (c) suggested next todo.
+Then summarize: (a) MVP shipped vs deferred, (b) optional next steps (OAuth, proxy, deploy).
 Wait for my confirmation before assuming implementation work.
 ```

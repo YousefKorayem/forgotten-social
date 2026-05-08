@@ -40,8 +40,8 @@ npm run build
 
 ## Project Docs
 
-- [docs/PLAN.md](docs/PLAN.md) is the roadmap, architecture notes, decisions log, and current task list.
-- [AGENTS.md](AGENTS.md) documents repo conventions and the planning/build-agent workflow.
+- [docs/PLAN.md](docs/PLAN.md) — roadmap, architecture, decisions log, YAML todos. Start with **§ Snapshot for a fresh planning chat** when resuming work without prior conversation context.
+- [AGENTS.md](AGENTS.md) — repo conventions, planning vs build agents, **§ Snapshot for new chats**.
 
 ## Deployment
 

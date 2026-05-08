@@ -1,12 +1,12 @@
-### 2026-05-08 — Merge: `feat/polish-mvp` → `main`
-
-- **Outcome:** Polish PR merged (regular merge). MVP polish on `main`. **Deferred:** OAuth (`auth`), `proxy.ts` (`middleware`).
-
----
-
 # Agent reports (interim handoff log)
 
 **Purpose:** After a **build agent** (Cursor Agent mode / subagent—the **planning agent does not write app code**) finishes a slice, **append a new entry at the top** of this file. The **planning agent** reads this log to advise you and update [`docs/PLAN.md`](../docs/PLAN.md) / [`AGENTS.md`](../AGENTS.md); it **does not** replace build-agent entries here.
+
+---
+
+### 2026-05-08 — Merge: `feat/polish-mvp` → `main`
+
+- **Outcome:** Polish PR merged (regular merge). MVP polish on `main`. **Deferred:** OAuth (`auth`), `proxy.ts` (`middleware`).
 
 ---
 

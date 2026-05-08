@@ -53,6 +53,19 @@ isProject: false
 
 # ForgottenSocial — Full-Stack Plan
 
+## Snapshot for a fresh planning chat (no prior context)
+
+**Last aligned:** 2026-05 — update this subsection when the product or `main` reality drifts.
+
+- **What this is:** Twitter-style MVP in Next.js 16: register/sign-in, global + following feeds, profiles, follow/unfollow, like/unlike, text posts (≤280 chars), MongoDB + Mongoose, NextAuth v5 with **Credentials** and **JWT** sessions.
+- **Where the code lives:** Git repo root = `forgotten-social/` (parent folder `ForgottenSocial/` is often *not* the git root on disk).
+- **MVP feature work (YAML `todos` above):** `scaffold` through `polish` are **`completed`** — the app is portfolio-ready for the scope below.
+- **Still open in YAML (optional extensions, not blocking MVP):** **`auth`** — add GitHub/Google OAuth providers in `lib/auth.ts` + env; **`middleware`** — populate **`proxy.ts`** protected paths so write routes redirect unauthenticated users (split **`auth.config.ts`** / **`lib/auth.ts`** pattern already avoids Edge + Mongoose issues).
+- **Surfaces shipped:** `/` (composer + **For you** / **Following** tabs), `/sign-in`, `/sign-up`, `/[username]` profile, APIs under `app/api/` (`posts`, `posts/feed`, `posts/[id]/like`, `users/[username]/follow`, `auth/*`, `health`). Shared feed logic: `lib/post-feed-shared.ts`, `lib/feed-constants.ts`, `lib/serialize-feed-post.ts`.
+- **Env (local):** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL` — see [`README.md`](../README.md); never commit `.env.local`.
+- **Workflow:** Feature branches + PRs + **regular merge** to `main` (no squash). Build agents append [`notes/agent-reports.md`](../notes/agent-reports.md); planning agent edits this file + `AGENTS.md` only by default.
+- **Next conversations:** OAuth and/or `proxy.ts` hardening, deployment (Vercel + Atlas), portfolio README/screenshots — or declare “done” and freeze.
+
 ## Stack (locked in)
 
 - **Framework**: Next.js 16 (App Router) + TypeScript
@@ -64,7 +77,7 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Merged to `main` (MVP path):** Credentials auth + registration; **`posts-api`** / **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (tabs + `/api/posts/feed`); **`polish`** — README setup (**`MONGODB_URI`**, **`AUTH_SECRET`**, **`AUTH_URL`**), improved empty states, **`FeedList`** skeletons, composer feedback, **`app/not-found.tsx`**, responsive tweaks on composer/profile. In-repo roadmap: this file and [`AGENTS.md`](../AGENTS.md). PRs merged with **regular merge**; run **`git pull origin main`** after merging **`feat/polish-mvp`** (or anytime).
+- **Merged to `main` (MVP path):** Credentials auth + registration; **`posts-api`** / **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (tabs + `/api/posts/feed`); **`polish`** — README setup (**`MONGODB_URI`**, **`AUTH_SECRET`**, **`AUTH_URL`**), improved empty states, **`FeedList`** skeletons, composer feedback, **`app/not-found.tsx`**, responsive tweaks on composer/profile. In-repo roadmap: this file and [`AGENTS.md`](../AGENTS.md). PRs merged with **regular merge**; run **`git pull origin main`** on each clone after merges.
 - **Deferred (optional extensions):** **`auth`** — GitHub/Google OAuth (credentials-only shipped). **`middleware`** — tighten **`proxy.ts`** for write routes. Deploy (e.g. Vercel + Atlas) when ready — see README / Decisions log.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
