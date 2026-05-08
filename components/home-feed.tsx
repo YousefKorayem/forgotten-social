@@ -27,6 +27,7 @@ export function HomeFeed() {
           <FeedList
             injectPost={injectPost}
             onInjectConsumed={handleInjectConsumed}
+            emptyDescription="Be the first to share a thought. New posts appear here as the community starts talking."
           />
         </section>
       </div>
@@ -46,6 +47,7 @@ export function HomeFeed() {
           <FeedList
             injectPost={injectPost}
             onInjectConsumed={handleInjectConsumed}
+            emptyDescription="Be the first to share a thought. New posts appear here as the community starts talking."
           />
         </section>
       </TabsContent>
@@ -54,8 +56,8 @@ export function HomeFeed() {
           <h2 className="sr-only">Posts from people you follow</h2>
           <FeedList
             apiPath="/api/posts/feed"
-            emptyTitle="Nothing here yet"
-            emptyDescription="Posts from accounts you follow will appear here. Follow people from their profiles to fill this feed."
+            emptyTitle="Your following feed is quiet"
+            emptyDescription="Follow people from their profiles and their newest posts will collect here. If they have not posted yet, check back soon."
           />
         </section>
       </TabsContent>

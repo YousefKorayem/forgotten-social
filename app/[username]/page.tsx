@@ -111,7 +111,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const feedPosts = visiblePosts.map((doc) =>
     serializePost(
       doc,
-      session?.user?.id != null
+      typeof session?.user?.id === "string"
         ? likedPostIds.has(doc._id.toString())
         : undefined
     )
@@ -122,7 +122,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <section className="mb-8 overflow-hidden border border-border bg-card">
         <div className="h-24 border-b border-border bg-muted/40" aria-hidden />
         <div className="space-y-5 px-4 pb-5 pt-0">
-          <div className="-mt-8 flex items-end justify-between gap-4">
+          <div className="-mt-8 flex flex-wrap items-end justify-between gap-4">
             <Avatar className="size-20 ring-4 ring-background">
               {user.image ? <AvatarImage src={user.image} alt="" /> : null}
               <AvatarFallback className="text-lg">
@@ -137,11 +137,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </div>
 
           <div className="space-y-2">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            <div className="min-w-0">
+              <h1 className="break-words text-xl font-semibold tracking-tight text-foreground">
                 {user.name}
               </h1>
-              <p className="text-sm text-muted-foreground">@{user.username}</p>
+              <p className="break-all text-sm text-muted-foreground">
+                @{user.username}
+              </p>
             </div>
             <p className="min-h-5 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
               {user.bio?.trim() ? user.bio : "No bio yet."}
@@ -193,14 +195,19 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </div>
         ) : (
           <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-              <NewspaperIcon
-                className="size-10 text-muted-foreground"
-                weight="duotone"
-              />
-              <p className="text-sm font-medium text-foreground">No posts yet</p>
+            <CardContent className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+              <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+                <NewspaperIcon
+                  className="size-6 text-muted-foreground"
+                  weight="duotone"
+                />
+              </div>
+              <p className="text-base font-semibold tracking-tight text-foreground">
+                No posts yet
+              </p>
               <p className="max-w-sm text-sm text-muted-foreground">
-                When @{user.username} shares something, it will show up here.
+                @{user.username} has not shared anything yet. Their posts will
+                appear here when they do.
               </p>
             </CardContent>
           </Card>

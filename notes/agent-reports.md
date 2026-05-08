@@ -4,6 +4,36 @@
 
 ---
 
+### 2026-05-08 — Polish MVP pass
+
+- **Branch:** `feat/polish-mvp`
+- **Scope:** Complete [`docs/PLAN.md`](../docs/PLAN.md) **`polish`** slice. Replaced the generic create-next-app `README.md` with project setup docs, prerequisites, required env vars, local commands, and links to `docs/PLAN.md` / `AGENTS.md`. Improved global/following feed empty copy and layout; added `FeedList` skeletons for initial load and load-more states; kept feedback inline with existing `Alert` / `Card` components instead of adding a toast dependency. Added composer success feedback and small-screen submit layout polish. Added `app/not-found.tsx` for unknown routes while preserving dynamic profile `notFound()` behavior. Tightened profile header wrapping and profile empty-state copy/layout for narrow screens.
+
+**Files created**
+
+- `app/not-found.tsx`
+
+**Files modified**
+
+- `README.md`
+- `components/feed-list.tsx`
+- `components/home-feed.tsx`
+- `components/composer.tsx`
+- `app/[username]/page.tsx`
+- `docs/PLAN.md` — **`polish`** completed
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — completed successfully; route list includes **`ƒ /_not-found`**
+
+**Follow-ups**
+
+- **`auth`** / OAuth remains deferred per plan.
+- **`middleware`** remains open per plan.
+
+---
+
 ### 2026-05-08 — Following feed API + home tabs
 
 - **Branch:** `feat/following-feed`

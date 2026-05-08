@@ -1,41 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ForgottenSocial
 
-## Documentation
+ForgottenSocial is a small Twitter-style social app built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js, and MongoDB/Mongoose. The MVP supports credentials auth, profiles, text posts, likes, follows, and global/following feeds.
 
-- **[AGENTS.md](AGENTS.md)** — conventions; **planning agent** (roadmap + handoff prompts only) vs **build agents** (implementation); pointers to plan and reports.
-- **[docs/PLAN.md](docs/PLAN.md)** — roadmap, todos, architecture, decisions, and gotchas (canonical; lives in-repo).
+## Prerequisites
 
-## Getting Started
+- Node.js 20+ is recommended for Next.js 16.
+- A MongoDB Atlas account and cluster connection string.
 
-First, run the development server:
+## Environment
+
+Create a local `.env.local` file in this directory. Never commit `.env.local` or real secrets.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+MONGODB_URI="mongodb+srv://..."
+AUTH_SECRET="replace-with-a-long-random-secret"
+AUTH_URL="http://localhost:3000"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `MONGODB_URI` connects Mongoose to MongoDB Atlas.
+- `AUTH_SECRET` signs Auth.js session tokens.
+- `AUTH_URL` tells Auth.js the app's canonical URL for redirects and callbacks.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git clone <repo-url>
+cd forgotten-social
+npm install
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+Optional production check:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Docs
 
-## Deploy on Vercel
+- [docs/PLAN.md](docs/PLAN.md) is the roadmap, architecture notes, decisions log, and current task list.
+- [AGENTS.md](AGENTS.md) documents repo conventions and the planning/build-agent workflow.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The app is Vercel-compatible. Configure the same environment variables in the hosting provider and keep MongoDB Atlas network access aligned with the deployed runtime.

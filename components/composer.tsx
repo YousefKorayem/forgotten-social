@@ -20,19 +20,23 @@ type ErrorBody = {
   error?: string;
 };
 
-export function Composer({ onPostCreated }: ComposerProps) {
+export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
   const { data: session, status } = useSession();
   const [content, setContent] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitNotice, setSubmitNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const signedIn = status === "authenticated" && !!session?.user;
   const callbackUrl =
-    typeof window !== "undefined" ? encodeURIComponent(window.location.pathname || "/") : "/";
+    globalThis.window === undefined
+      ? "/"
+      : encodeURIComponent(globalThis.window.location.pathname || "/");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
     setSubmitError(null);
+    setSubmitNotice(null);
 
     const trimmed = content.trim();
     if (!trimmed || submitting) return;
@@ -67,6 +71,7 @@ export function Composer({ onPostCreated }: ComposerProps) {
       const created = (body as PostCreateApiResponse).post;
       if (created) {
         setContent("");
+        setSubmitNotice("Posted to the feed.");
         onPostCreated?.(created);
       }
     } finally {
@@ -113,6 +118,12 @@ export function Composer({ onPostCreated }: ComposerProps) {
         <CardDescription>What&apos;s on your mind? (max 280 characters)</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
+        {submitNotice ? (
+          <Alert>
+            <PaperPlaneTiltIcon size={16} weight="regular" />
+            <AlertDescription>{submitNotice}</AlertDescription>
+          </Alert>
+        ) : null}
         {submitError ? (
           <Alert variant="destructive">
             <SignInIcon size={16} weight="regular" />
@@ -139,16 +150,25 @@ export function Composer({ onPostCreated }: ComposerProps) {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               disabled={submitting}
-              className="resize-y min-h-20 text-sm md:text-sm"
+              className="min-h-24 resize-y text-sm md:text-sm"
             />
-            <div className="flex justify-end text-xs text-muted-foreground tabular-nums">
-              {content.length}/280
+            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+              <span className="truncate">
+                Keep it short and readable for the feed.
+              </span>
+              <span className="shrink-0 tabular-nums">
+                {content.length}/280
+              </span>
             </div>
           </div>
           <div className="flex justify-end">
-            <Button type="submit" disabled={submitting || !content.trim()}>
+            <Button
+              type="submit"
+              className="w-full sm:w-auto"
+              disabled={submitting || !content.trim()}
+            >
               <PaperPlaneTiltIcon className="size-4" weight="regular" />
-              Post
+              {submitting ? "Posting..." : "Post"}
             </Button>
           </div>
         </form>
