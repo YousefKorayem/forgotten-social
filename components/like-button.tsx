@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { signOutIfSessionExpiredPayload } from "@/lib/session-expired-client";
 import type { FeedPost } from "@/types/feed";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,18 @@ export function LikeButton({ post, className }: LikeButtonProps) {
       if (res.status === 401) {
         setLiked(prevLiked);
         setCount(prevCount);
+        let payload: unknown = null;
+        try {
+          payload = await res.json();
+        } catch {
+          /* ignore */
+        }
+        if (await signOutIfSessionExpiredPayload(payload)) {
+          setAuthHint(
+            "Your session is no longer valid. Please sign in again."
+          );
+          return;
+        }
         setAuthHint("You need to sign in to like posts.");
         return;
       }
