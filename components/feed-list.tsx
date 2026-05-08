@@ -24,13 +24,49 @@ type FeedListProps = {
   onInjectConsumed?: () => void;
 };
 
+const SKELETON_ROWS = ["first", "second", "third"] as const;
+
+function FeedSkeleton() {
+  return (
+    <Card aria-label="Loading posts">
+      <CardContent className="divide-y divide-border px-4 py-0">
+        {SKELETON_ROWS.map((row) => (
+          <div key={row} className="flex gap-3 py-4">
+            <div className="size-8 shrink-0 animate-pulse rounded-full bg-muted" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+                <div className="h-3 w-16 animate-pulse rounded bg-muted" />
+              </div>
+              <div className="h-3 w-full animate-pulse rounded bg-muted" />
+              <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function LoadMoreSkeleton() {
+  return (
+    <div className="flex items-center gap-3 rounded-none border border-border bg-card px-4 py-3">
+      <div className="size-7 shrink-0 animate-pulse rounded-full bg-muted" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+        <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+      </div>
+    </div>
+  );
+}
+
 export function FeedList({
   apiPath = "/api/posts",
   emptyTitle = "No posts yet",
   emptyDescription = "When people share something, it will show up here. Be the first to post.",
   injectPost,
   onInjectConsumed,
-}: FeedListProps) {
+}: Readonly<FeedListProps>) {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,13 +177,7 @@ export function FeedList({
   }, [nextCursor, loadMore]);
 
   if (loading) {
-    return (
-      <Card className="border-dashed">
-        <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          Loading posts…
-        </CardContent>
-      </Card>
-    );
+    return <FeedSkeleton />;
   }
 
   if (error && posts.length === 0) {
@@ -167,9 +197,13 @@ export function FeedList({
   if (posts.length === 0) {
     return (
       <Card className="border-dashed">
-        <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-          <NewspaperIcon className="size-10 text-muted-foreground" weight="duotone" />
-          <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
+        <CardContent className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+          <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+            <NewspaperIcon className="size-6 text-muted-foreground" weight="duotone" />
+          </div>
+          <p className="text-base font-semibold tracking-tight text-foreground">
+            {emptyTitle}
+          </p>
           <p className="max-w-sm text-sm text-muted-foreground">{emptyDescription}</p>
         </CardContent>
       </Card>
@@ -206,10 +240,13 @@ export function FeedList({
 
       <div ref={sentinelRef} className="h-1 w-full" aria-hidden />
 
-      {nextCursor != null ? (
+      {nextCursor ? (
         <div className="flex justify-center py-4">
           {loadingMore ? (
-            <p className="text-xs text-muted-foreground">Loading more…</p>
+            <div className="w-full" aria-live="polite">
+              <LoadMoreSkeleton />
+              <span className="sr-only">Loading more posts</span>
+            </div>
           ) : (
             <Button type="button" variant="outline" size="sm" onClick={() => void loadMore()}>
               Load more
