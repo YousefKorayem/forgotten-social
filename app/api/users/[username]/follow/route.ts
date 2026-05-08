@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { requireExistingUserBySessionUserId } from "@/lib/require-session-user";
 import Follow from "@/models/Follow";
 import User from "@/models/User";
 
@@ -52,6 +53,9 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const viewer = await requireExistingUserBySessionUserId(session.user.id);
+  if (!viewer.ok) return viewer.response;
+
   const { username: rawUsername } = await context.params;
   const { user: target } = await resolveTargetUser(rawUsername);
 
@@ -59,7 +63,7 @@ export async function POST(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const followerId = new mongoose.Types.ObjectId(session.user.id);
+  const followerId = viewer.userId;
   if (target._id.equals(followerId)) {
     return NextResponse.json({ error: "Cannot follow yourself" }, { status: 400 });
   }
@@ -101,6 +105,9 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const viewer = await requireExistingUserBySessionUserId(session.user.id);
+  if (!viewer.ok) return viewer.response;
+
   const { username: rawUsername } = await context.params;
   const { user: target } = await resolveTargetUser(rawUsername);
 
@@ -108,7 +115,7 @@ export async function DELETE(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const followerId = new mongoose.Types.ObjectId(session.user.id);
+  const followerId = viewer.userId;
   if (target._id.equals(followerId)) {
     return NextResponse.json({ error: "Cannot unfollow yourself" }, { status: 400 });
   }

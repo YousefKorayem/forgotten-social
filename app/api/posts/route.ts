@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { requireExistingUserBySessionUserId } from "@/lib/require-session-user";
 import {
   DEFAULT_LIMIT,
   feedLimitSchema,
@@ -29,6 +30,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const viewer = await requireExistingUserBySessionUserId(session.user.id);
+  if (!viewer.ok) return viewer.response;
+
   let body: unknown;
   try {
     body = await request.json();
@@ -46,7 +50,7 @@ export async function POST(request: Request) {
 
   try {
     const post = await Post.create({
-      author: new mongoose.Types.ObjectId(session.user.id),
+      author: viewer.userId,
       content: parsed.data.content,
     });
 
