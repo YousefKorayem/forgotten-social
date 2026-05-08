@@ -4,6 +4,33 @@
 
 ---
 
+### 2026-05-08 — Follow API + `FollowButton`
+
+- **Branch:** `feat/follow-api`
+- **Scope:** Implement [`docs/PLAN.md`](../docs/PLAN.md) **follow** slice: `POST`/`DELETE` `/api/users/[username]/follow` (`app/api/users/[username]/follow/route.ts`) with `auth()`, target resolved by lowercase `username`, reject self follow/unfollow (**400**), **401** without session, **404** when profile user missing. **`Follow.create`** with compound unique index on **`Follow`**; Mongo duplicate key **11000** on follow treated as idempotent success (**200** + `{ following, followersCount }`). **`DELETE`** uses **`Follow.deleteOne`**; idempotent **204** when target user exists (no body — whether a row was removed or not). **`POST`** documents empty-body behavior (no `request.json()`, no Zod). **`FollowButton`** client component on **`/[username]`** — hidden for logged-out or own profile, loading skeleton when session loading, optimistic follow state with **`router.refresh()`** after mutation. Replaced profile “Follow button coming soon” placeholder.
+
+**Files created**
+
+- `app/api/users/[username]/follow/route.ts`
+- `components/follow-button.tsx`
+
+**Files modified**
+
+- `app/[username]/page.tsx` — `auth()` + `Follow.exists` for initial state, render `FollowButton`
+- `docs/PLAN.md` — follow todo **completed**; current-state blurb updated
+
+**Verification**
+
+- `npx tsc --noEmit` — exit **0**
+- `npm run build` — completed successfully; route list includes `ƒ /api/users/[username]/follow`
+
+**Follow-ups**
+
+- **`like`:** API + `LikeButton` per plan
+- **`following-feed`:** next after like
+
+---
+
 ### 2026-05-08 — Merge: `feat/profile-page` → `main`
 
 - **Outcome:** Profile PR merged (regular merge). `main` includes `/[username]`, shared post serialization, profile counts from **`Follow`**. **Next build slice:** **`follow`** (API + `FollowButton`).

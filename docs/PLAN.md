@@ -34,7 +34,7 @@ todos:
     status: completed
   - id: follow
     content: Implement follow/unfollow API route and FollowButton client component; ensure idempotent on duplicate-key
-    status: in_progress
+    status: completed
   - id: like
     content: Implement like/unlike API route with $inc on Post.likeCount; add LikeButton client component with optimistic updates
     status: pending
@@ -66,7 +66,8 @@ isProject: false
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
 - **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`** (`/[username]`, `lib/serialize-feed-post.ts`, counts from **`Follow`**, latest posts). PRs merged with **regular merge** as preferred. Ensure local `main` matches origin (`git pull origin main`).
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **In progress:** **`follow`** — follow/unfollow API (session required; idempotent / duplicate-key safe on **`Follow`**), **`FollowButton`** on profile (replace placeholder), optimistic or refetched counts as needed. Then **`like`** API + **`LikeButton`**, then **`following-feed`**. OAuth deferred — todo **`auth`** open.
+- **In progress:** **`like`** API + **`LikeButton`**, then **`following-feed`**. OAuth deferred — todo **`auth`** open.
+- **Done (slice):** **`follow`** — `POST`/`DELETE` `/api/users/[username]/follow` (session required; duplicate-key on follow treated as success; idempotent `DELETE` → **204** when target exists). **`FollowButton`** on profile with optimistic toggle + `router.refresh()` for counts.
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
