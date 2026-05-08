@@ -84,8 +84,9 @@ export async function GET(request: Request) {
 
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
+    const last = page.at(-1);
     const nextCursor =
-      hasMore && page.length > 0 ? page[page.length - 1]._id.toString() : null;
+      hasMore && last != null ? last._id.toString() : null;
 
     let likedIds = new Set<string>();
     if (page.length > 0) {
