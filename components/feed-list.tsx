@@ -7,21 +7,30 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PostCard } from "@/components/post-card";
+import { FEED_DEFAULT_LIMIT } from "@/lib/feed-constants";
 import type { FeedPost, PostsApiResponse } from "@/types/feed";
-
-const PAGE_LIMIT = 20;
 
 type ErrorBody = {
   error?: string;
 };
 
 type FeedListProps = {
+  /** Feed API path (default global feed). */
+  apiPath?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
   /** When set, merged at the top of the list (e.g. newly created post). */
   injectPost?: FeedPost | null;
   onInjectConsumed?: () => void;
 };
 
-export function FeedList({ injectPost, onInjectConsumed }: FeedListProps) {
+export function FeedList({
+  apiPath = "/api/posts",
+  emptyTitle = "No posts yet",
+  emptyDescription = "When people share something, it will show up here. Be the first to post.",
+  injectPost,
+  onInjectConsumed,
+}: FeedListProps) {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,9 +39,9 @@ export function FeedList({ injectPost, onInjectConsumed }: FeedListProps) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const fetchPage = useCallback(async (cursor: string | null) => {
-    const params = new URLSearchParams({ limit: String(PAGE_LIMIT) });
+    const params = new URLSearchParams({ limit: String(FEED_DEFAULT_LIMIT) });
     if (cursor) params.set("cursor", cursor);
-    const res = await fetch(`/api/posts?${params.toString()}`);
+    const res = await fetch(`${apiPath}?${params.toString()}`);
 
     let body: PostsApiResponse | ErrorBody | null = null;
     try {
@@ -47,7 +56,7 @@ export function FeedList({ injectPost, onInjectConsumed }: FeedListProps) {
     }
 
     return body as PostsApiResponse;
-  }, []);
+  }, [apiPath]);
 
   const retryInitial = useCallback(() => {
     setLoading(true);
@@ -160,10 +169,8 @@ export function FeedList({ injectPost, onInjectConsumed }: FeedListProps) {
       <Card className="border-dashed">
         <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
           <NewspaperIcon className="size-10 text-muted-foreground" weight="duotone" />
-          <p className="text-sm font-medium text-foreground">No posts yet</p>
-          <p className="max-w-sm text-sm text-muted-foreground">
-            When people share something, it will show up here. Be the first to post.
-          </p>
+          <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
+          <p className="max-w-sm text-sm text-muted-foreground">{emptyDescription}</p>
         </CardContent>
       </Card>
     );

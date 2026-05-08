@@ -40,10 +40,10 @@ todos:
     status: completed
   - id: following-feed
     content: Implement GET /api/posts/feed (following-only) and add Following tab on home page
-    status: in_progress
+    status: completed
   - id: polish
     content: "Polish: empty states, loading skeletons, error toasts, 404s, basic responsive styling, README with setup steps"
-    status: pending
+    status: in_progress
 isProject: false
 ---
 
@@ -64,9 +64,9 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`**; **`follow`**; **`like`** (`POST`/`DELETE` `/api/posts/[id]/like`, **`LikeButton`** on **`PostCard`**, **`FeedPost.likedByMe`** on feed/profile when signed in). PRs merged with **regular merge** as preferred; run **`git pull origin main`** after merging.
+- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (`GET /api/posts/feed` with **`auth()`**, **`Follow`**-scoped posts, **`likedByMe`**; home **For you** / **Following** tabs via shadcn **`Tabs`**, **`FeedList`** **`apiPath`**, shared **`lib/post-feed-shared.ts`** + **`lib/feed-constants.ts`**). PRs merged with **regular merge** as preferred; run **`git pull origin main`** after merging.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **In progress:** **`following-feed`** — `GET /api/posts/feed` (posts from accounts the viewer follows only), plus a **Following** tab on the home feed next to the global feed. Then **`polish`**. OAuth deferred — todo **`auth`** open.
+- **In progress:** **`polish`** (empty states, skeletons, README, etc.). OAuth deferred — todo **`auth`** open.
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
