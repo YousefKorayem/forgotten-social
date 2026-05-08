@@ -37,7 +37,7 @@ todos:
     status: completed
   - id: like
     content: Implement like/unlike API route with $inc on Post.likeCount; add LikeButton client component with optimistic updates
-    status: pending
+    status: in_progress
   - id: following-feed
     content: Implement GET /api/posts/feed (following-only) and add Following tab on home page
     status: pending
@@ -64,7 +64,7 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`** (`/[username]`, `lib/serialize-feed-post.ts`, counts from **`Follow`**, latest posts). PRs merged with **regular merge** as preferred. Ensure local `main` matches origin (`git pull origin main`).
+- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**; **`profile`**. After you merge PR **`feat/follow-api`**, **`follow`** (`/api/users/[username]/follow`, `FollowButton`) is on `main` too — then extend this bullet (and run `git pull origin main`). PRs merged with **regular merge** as preferred.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **In progress:** **`like`** API + **`LikeButton`**, then **`following-feed`**. OAuth deferred — todo **`auth`** open.
 - **Done (slice):** **`follow`** — `POST`/`DELETE` `/api/users/[username]/follow` (session required; duplicate-key on follow treated as success; idempotent `DELETE` → **204** when target exists). **`FollowButton`** on profile with optimistic toggle + `router.refresh()` for counts.
