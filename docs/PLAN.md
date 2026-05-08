@@ -31,7 +31,7 @@ todos:
     status: completed
   - id: profile
     content: Build /[username] profile page with avatar, bio, post list, follower/following counts (server-rendered)
-    status: in_progress
+    status: completed
   - id: follow
     content: Implement follow/unfollow API route and FollowButton client component; ensure idempotent on duplicate-key
     status: pending
@@ -64,10 +64,10 @@ isProject: false
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
-- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`** (home feed: `Composer`, `FeedList`, `PostCard`, infinite scroll / load more, `types/feed.ts`). PRs merged with **regular merge** as preferred.
+- **Merged to `main`:** Credentials auth end-to-end; handoff docs + README pointers; **`posts-api`**; **`feed-ui`**. After you merge **`feat/profile-page`**, add **`profile`** here and run `git pull origin main`. PRs merged with **regular merge** as preferred.
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
-- **In progress:** **`profile`** — dynamic route `/[username]` (server-rendered): avatar, bio, user’s posts, follower/following counts (once follow API exists). Makes `PostCard` author links resolve instead of 404.
-- **Next after profile:** **`follow`** / **`like`** APIs + UI (`FollowButton`, `LikeButton`), then **`following-feed`** tab + `GET /api/posts/feed`. OAuth (GitHub/Google) remains deferred — todo `auth` stays open.
+- **Latest build-agent work (merge pending unless you already merged):** Branch **`feat/profile-page`**, commit **`7d7ee09`** — `app/[username]/page.tsx`; `lib/serialize-feed-post.ts` (shared with `app/api/posts/route.ts`); case-insensitive `username`; `notFound()` if missing; follower/following counts via **`Follow`**; latest **20** posts + existing **`PostCard`**. See top of [`notes/agent-reports.md`](../notes/agent-reports.md).
+- **Next slice:** **`follow`** — follow/unfollow API + **`FollowButton`** (report mentions a follow placeholder). Then **`like`**, then **`following-feed`**. OAuth deferred — todo **`auth`** open.
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
