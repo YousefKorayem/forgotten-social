@@ -1,6 +1,6 @@
 # Agent reports (interim handoff log)
 
-**Purpose:** After a **build agent** (Agent mode / subagent—not the planning chat) finishes a labor-intensive slice, **append a new entry at the top** of this file. **Planning / review** chats edit roadmap docs only by default; they read this log plus [`AGENTS.md`](../AGENTS.md) and [`docs/PLAN.md`](../docs/PLAN.md) to stay aligned.
+**Purpose:** After a **build agent** (Cursor Agent mode / subagent—the **planning agent does not write app code**) finishes a slice, **append a new entry at the top** of this file. The **planning agent** reads this log to advise you and update [`docs/PLAN.md`](../docs/PLAN.md) / [`AGENTS.md`](../AGENTS.md); it **does not** replace build-agent entries here.
 
 ---
 

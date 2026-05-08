@@ -10,12 +10,31 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **ForgottenSocial** is a Twitter-style social network built as a portfolio full-stack app. MVP scope: credentials auth, profiles, text posts, likes, follows, and a following-only feed. Backend is Next.js route handlers (`app/api/.../route.ts`), not a separate Express server.
 
-## How we use AI (planning vs building)
+## Planning agent vs build agents (mandatory split)
 
-- **Planning / review chat** (the long-lived chat that owns [`docs/PLAN.md`](docs/PLAN.md) and this file): roadmap, tradeoffs, PR review guidance, doc updates, and handoff prompts. It **does not** implement application code unless you explicitly ask it to—default stance is **plan and review only**.
-- **Build agents** (Cursor **Agent** mode, task runners, or dedicated implementation chats): write and refactor code, run tests and builds, make commits, and **append a report** to [`notes/agent-reports.md`](notes/agent-reports.md) when a slice is finished.
+These are **different roles**. Do not blur them.
 
-If something is ambiguous, the planning chat clarifies the spec; the build agent executes against [`docs/PLAN.md`](docs/PLAN.md) and existing patterns in the repo.
+### Planning agent (this chat)
+
+The **planning agent** is for **planning only**: roadmap, sequencing, tradeoffs, PR review guidance, and **copy-paste handoff prompts** for you to run in Cursor **Agent** mode or other **subagent** sessions.
+
+**In scope**
+
+- Edit **documentation**: [`docs/PLAN.md`](docs/PLAN.md), this file, [`notes/agent-reports.md`](notes/agent-reports.md) (meta / clarity only—not replacing build-agent entries), [`README.md`](README.md) pointers when needed.
+- Summarize state, suggest next branch names, draft **`gh pr create`** messaging, and produce **implementation prompts** that reference `docs/PLAN.md` and existing patterns.
+
+**Out of scope (unless you explicitly tell this chat to implement)**
+
+- **No application code**: do not add or change files under `app/` (except docs routes if ever added), `components/` (UI product code), `lib/` (runtime helpers **used by the app**), `models/`, API routes, auth wiring, styles for product UI, or `package.json` dependencies for features.
+- Subagents own **all** of that.
+
+If the maintainer explicitly asks the planning agent to implement something, that is a **deliberate exception**—default remains **planning and prompts only**.
+
+### Build agents (subagents / Agent mode)
+
+**Build agents** implement features: write and refactor application code, run tests and builds, create commits, push branches, and **append** an entry to [`notes/agent-reports.md`](notes/agent-reports.md) when a slice is done.
+
+**Workflow:** Planning agent clarifies the spec and hands you a prompt → you paste it into **Agent** mode (or a dedicated build chat) → build agent ships code and reports.
 
 ## Repo layout
 
@@ -63,18 +82,18 @@ If something is ambiguous, the planning chat clarifies the spec; the build agent
 
 ---
 
-## Bootstrap message (paste into a new planning chat)
+## Bootstrap message (paste into a new **planning** chat)
 
 ```text
-We're building ForgottenSocial, a Next.js 16 + TS + Tailwind + MongoDB social
-network. Read these files in order before responding:
+You are the planning agent for ForgottenSocial (Next.js 16 + TS + Tailwind + MongoDB).
+Planning only: roadmap, docs, review guidance, and handoff prompts for Agent mode / subagents.
+Do not implement app code (app/, components/, lib/* runtime code, models/, API routes) unless I explicitly ask you to.
 
-1. forgotten-social/AGENTS.md  — project guide
-2. forgotten-social/notes/agent-reports.md  — recent agent work
+Read in order:
+1. forgotten-social/AGENTS.md
+2. forgotten-social/notes/agent-reports.md
 3. forgotten-social/docs/PLAN.md
-   — current todos, decisions log, gotchas
 
-Then summarize: (a) what's done, (b) what's in flight, (c) what the next todo is.
-This chat is planning/review only unless I ask you to implement—build work goes to Agent mode / subagents.
-Wait for me to confirm before doing anything.
+Then summarize: (a) what's done, (b) what's in flight, (c) suggested next todo.
+Wait for my confirmation before assuming implementation work.
 ```

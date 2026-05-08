@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Documentation
 
-- **[AGENTS.md](AGENTS.md)** — conventions and pointers for contributors and AI agents.
+- **[AGENTS.md](AGENTS.md)** — conventions; **planning agent** (roadmap + handoff prompts only) vs **build agents** (implementation); pointers to plan and reports.
 - **[docs/PLAN.md](docs/PLAN.md)** — roadmap, todos, architecture, decisions, and gotchas (canonical; lives in-repo).
 
 ## Getting Started

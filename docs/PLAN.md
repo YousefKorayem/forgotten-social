@@ -49,7 +49,7 @@ isProject: false
 
 > **Source of truth:** This file is the canonical roadmap (todos, architecture, decisions, gotchas). It lives in the repo so contributors and AI agents do not need Cursor’s `.cursor/plans/` directory.
 
-> **Collaboration:** The maintainer uses a **planning / review** chat to update this file and sequence work; **implementation** runs in separate Agent-mode or subagent sessions that follow this plan and report in [`notes/agent-reports.md`](../notes/agent-reports.md).
+> **Collaboration:** The **planning agent** (dedicated chat) updates this file, sequences work, and writes **handoff prompts**—it does **not** implement application code by default; see [`AGENTS.md`](../AGENTS.md). **Build agents** (Cursor Agent mode / subagents) implement features per this plan and append reports to [`notes/agent-reports.md`](../notes/agent-reports.md).
 
 # ForgottenSocial — Full-Stack Plan
 
@@ -68,7 +68,7 @@ isProject: false
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **In progress:** **`profile`** — dynamic route `/[username]` (server-rendered): avatar, bio, user’s posts, follower/following counts (once follow API exists). Makes `PostCard` author links resolve instead of 404.
 - **Next after profile:** **`follow`** / **`like`** APIs + UI (`FollowButton`, `LikeButton`), then **`following-feed`** tab + `GET /api/posts/feed`. OAuth (GitHub/Google) remains deferred — todo `auth` stays open.
-- **Agent handoff:** Read [`AGENTS.md`](../AGENTS.md) first (includes **planning vs build** roles), then [`notes/agent-reports.md`](../notes/agent-reports.md), then this file (`docs/PLAN.md`).
+- **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
 
