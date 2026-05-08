@@ -4,6 +4,12 @@
 
 ---
 
+### 2026-05-08 — Merge: `feat/profile-page` → `main`
+
+- **Outcome:** Profile PR merged (regular merge). `main` includes `/[username]`, shared post serialization, profile counts from **`Follow`**. **Next build slice:** **`follow`** (API + `FollowButton`).
+
+---
+
 ### 2026-05-08 — Profile page: server-rendered `/[username]`
 
 - **Branch:** `feat/profile-page`
