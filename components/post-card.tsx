@@ -1,8 +1,8 @@
 "use client";
 
-import { HeartIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 
+import { LikeButton } from "@/components/like-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatShortRelativeTime } from "@/lib/format-relative-time";
 import type { FeedPost } from "@/types/feed";
@@ -74,11 +74,7 @@ export function PostCard({
           <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">
             {post.content}
           </p>
-          <div className="flex items-center gap-1 pt-1 text-muted-foreground">
-            <HeartIcon className="size-4" weight="regular" aria-hidden />
-            <span className="text-xs tabular-nums">{post.likeCount}</span>
-            <span className="sr-only">likes</span>
-          </div>
+          <LikeButton post={post} />
         </div>
       </div>
     </article>
