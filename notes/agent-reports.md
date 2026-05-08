@@ -4,6 +4,18 @@
 
 ---
 
+### 2026-05-08 — QA follow-ups (404 auth, theme console, stale JWT, feed session, audit)
+
+- **Branch:** `fix/qa-followups`
+- **Commits:** five conventional commits on `fix/qa-followups` (`git log --oneline -5`).
+- **Scope:** Auth-aware **404** (`auth()`, profile CTA). **Theme:** removed `next-themes` inline `<script>` under React (Turbopack / React 19 console warning on `/_not-found`); **`next/script`** `beforeInteractive` + `lib/theme-boot-script.ts` + forked **`components/theme-provider.tsx`**. **Session propagation:** `RootLayout` **`await auth()`** passes **`session`** into **`SessionProvider`** so signed-in home no longer mounts **`HomeFeed`** as signed-out during `useSession` `loading` (fixes feed “double load” / tab swap). **Mutations:** **`lib/require-session-user.ts`** returns **`401`** `{ error: "Session expired" }` when JWT **`sub`** has no **`User`** doc; **POST** **`/api/posts`**, **like** **POST/DELETE**, **follow** **POST/DELETE**. **Client:** **`lib/session-expired-client.ts`** + compose / like / follow call **`signOut({ redirect: false })`** on that error. **`npm audit`:** **4 → 2** moderate (**`npm audit fix`** cleared **ip-address** / **express-rate-limit** chain); remaining **2** = **PostCSS** nested under **Next** — deferred (see **`docs/PLAN.md`** § Gotchas).
+- **Files touched:** `app/not-found.tsx`, `app/layout.tsx`, `app/providers.tsx`, `components/theme-provider.tsx`, `components/theme-toggle.tsx`, `lib/theme-boot-script.ts`, `lib/require-session-user.ts`, `lib/session-expired-client.ts`, `app/api/posts/route.ts`, `app/api/posts/[id]/like/route.ts`, `app/api/users/[username]/follow/route.ts`, `components/composer.tsx`, `components/like-button.tsx`, `components/follow-button.tsx`, `package.json`, `package-lock.json`, `docs/PLAN.md`, `docs/QA-CHECKLIST.md`
+- **Verification:** `npx tsc --noEmit` exit **0**; **`npm run build`** success (routes unchanged); audit counts **before:** 4 moderate, **after:** 2 moderate.
+- **Deferred:** Browser **Back** blank page — **`docs/PLAN.md`** § Gotchas; PostCSS advisory via **Next** — wait for upstream **Next** release or accepted override.
+- **PR / link:** Open **`fix/qa-followups`** → **`main`** with title **fix: QA follow-ups (404 auth + theme provider, stale JWT, home feed reflow, audit triage)**.
+
+---
+
 ### 2026-05-08 — Merge: `feat/polish-mvp` → `main`
 
 - **Outcome:** Polish PR merged (regular merge). MVP polish on `main`. **Deferred:** OAuth (`auth`), `proxy.ts` (`middleware`).
