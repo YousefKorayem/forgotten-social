@@ -16,13 +16,13 @@ todos:
     status: completed
   - id: auth
     content: Configure NextAuth.js v5 in lib/auth.ts with Credentials + GitHub + Google, JWT session, signIn callback that upserts User; expose handlers in app/api/auth/[...nextauth]/route.ts
-    status: in_progress
+    status: completed
   - id: auth-ui
     content: Build sign-in and sign-up pages with shadcn Form + zod validation; add /api/auth/register route for credentials signup with bcrypt
     status: completed
   - id: middleware
-    content: Add proxy.ts (Next.js 16 middleware) to protect write routes and redirect unauthenticated users to /sign-in
-    status: in_progress
+    content: Add proxy.ts (Next.js 16 middleware) to protect write API routes at the edge and return 401 JSON for unauthenticated mutations
+    status: completed
   - id: posts-api
     content: Implement POST /api/posts (create) and GET /api/posts (global feed, cursor-paginated)
     status: completed
@@ -60,7 +60,7 @@ isProject: false
 - **What this is:** Twitter-style MVP in Next.js 16: register/sign-in, global + following feeds, profiles, follow/unfollow, like/unlike, text posts (≤280 chars), MongoDB + Mongoose, NextAuth v5 with **Credentials** and **JWT** sessions.
 - **Where the code lives:** Git repo root = `forgotten-social/` (parent folder `ForgottenSocial/` is often *not* the git root on disk).
 - **MVP feature work (YAML `todos` above):** `scaffold` through `polish` are **`completed`** — the app is portfolio-ready for the scope below.
-- **Still open in YAML (optional extensions, not blocking MVP):** **`auth`** — add GitHub/Google OAuth providers in `lib/auth.ts` + env; **`middleware`** — populate **`proxy.ts`** protected paths so write routes redirect unauthenticated users (split **`auth.config.ts`** / **`lib/auth.ts`** pattern already avoids Edge + Mongoose issues).
+- **Still open in YAML (optional extensions, not blocking MVP):** None. Current deferred work is now tracked in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md) / [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
 - **Surfaces shipped:** `/` (composer + **For you** / **Following** tabs), `/sign-in`, `/sign-up`, `/[username]` profile, APIs under `app/api/` (`posts`, `posts/feed`, `posts/[id]/like`, `users/[username]/follow`, `auth/*`, `health`). Shared feed logic: `lib/post-feed-shared.ts`, `lib/feed-constants.ts`, `lib/serialize-feed-post.ts`.
 - **Env (local):** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL` — see [`README.md`](../README.md); never commit `.env.local`.
 - **Workflow:** Feature branches + PRs + **regular merge** to `main` (no squash). Build agents append [`notes/agent-reports.md`](../notes/agent-reports.md); planning agent edits this file + `AGENTS.md` only by default.
@@ -78,9 +78,9 @@ isProject: false
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
 - **Merged to `main` (MVP path):** Credentials auth + registration; **`posts-api`** / **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (tabs + `/api/posts/feed`); **`polish`** — README setup (**`MONGODB_URI`**, **`AUTH_SECRET`**, **`AUTH_URL`**), improved empty states, **`FeedList`** skeletons, composer feedback, **`app/not-found.tsx`**, responsive tweaks on composer/profile. In-repo roadmap: this file and [`AGENTS.md`](../AGENTS.md). PRs merged with **regular merge**; run **`git pull origin main`** on each clone after merges.
-- **Deferred (optional extensions):** **`auth`** — GitHub/Google OAuth (credentials-only shipped). **`middleware`** — tighten **`proxy.ts`** for write routes. Deploy (e.g. Vercel + Atlas) when ready — see README / Decisions log.
+- **Deferred (optional extensions):** Deployment (e.g. Vercel + Atlas), automated tests/CI, notifications, comments, media uploads, and other backlog items in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
 - **QA / feature planning:** Manual QA bugs live in [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). New feature ideas and portfolio upgrades live in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
-- **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
+- **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials + GitHub + Google auth, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` API write-route protection at the edge. Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
@@ -89,6 +89,7 @@ isProject: false
 - **Passwords:** `bcryptjs` (pure JS) for hashing/compare; avoid native `bcrypt` build friction on Windows/CI.
 - **UI kit:** shadcn/ui New York style, **Lyra** preset, **Zinc** base color (tweakable later).
 - **NextAuth + Edge:** Split config — `auth.config.ts` is edge-safe (no DB imports); `lib/auth.ts` spreads it and adds Credentials + Node-only logic (`dbConnect`, `User.findOne`, `bcrypt.compare`).
+- **OAuth provisioning policy:** On first GitHub/Google sign-in, create/find a `User` by normalized email. Username is derived from sanitized email local-part (`^[a-z0-9_]+$`), and on collisions retries with a short random suffix for a bounded number of attempts.
 - **Icons:** `@phosphor-icons/react/ssr`; use suffixed exports (e.g. `SunIcon`, `MoonIcon`) — bare `Sun`/`Moon` deprecated/removed in v2.
 - **Git:** Feature branches + PRs; **regular merges into `main` (no squash)** per maintainer preference.
 - **MVP posts:** Text-only (no images in first ship).
@@ -203,9 +204,9 @@ export async function dbConnect() {
 - `lib/auth.ts` exports `{ auth, handlers, signIn, signOut }` with `CredentialsProvider` (bcrypt-compared `passwordHash`) plus `GitHubProvider` and `GoogleProvider`.
 - **Session strategy: JWT (chosen).** After sign-in, Auth.js issues a signed/encrypted JWT and stores it in an HTTP-only cookie. Each request decodes the cookie — no DB roundtrip — and that's the session. The DB only stores `User` documents; sessions live in the cookie. This keeps **Mongoose as the only DB layer**, which is what we want to demonstrate.
   - Alternative we considered: the `@auth/mongodb-adapter` "database session" strategy stores sessions/accounts/verification tokens in Mongo and uses the native MongoDB driver alongside Mongoose. We're skipping it because the extra parallel-driver complexity isn't worth the (real but minor) benefits of revocable sessions for an MVP.
-- On first OAuth sign-in, the `signIn` callback upserts a `User` doc (auto-generates `username` from email).
+- On first OAuth sign-in, the `signIn` callback creates or reuses a `User` doc by normalized email and auto-generates a collision-safe `username`.
 - Add `session.user.id` and `session.user.username` via the `jwt` and `session` callbacks so the client knows who's signed in.
-- [`proxy.ts`](../proxy.ts) (middleware) gates write routes (`/compose`, mutation API routes) and redirects unauthenticated users to `/sign-in`. Edge runtime: use edge-safe NextAuth config only (see Decisions log — split config).
+- [`proxy.ts`](../proxy.ts) (Next.js 16 proxy) gates mutation API routes at the edge and returns `401` JSON for unsigned requests (no API redirects). Edge runtime: use edge-safe NextAuth config only (see Decisions log — split config).
 
 ## API routes (key ones)
 

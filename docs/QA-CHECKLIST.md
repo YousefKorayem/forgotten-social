@@ -48,6 +48,12 @@
 - [ ] **Zod errors visible** — submit `/sign-up` with empty fields, invalid email, very short password → field-level errors render.
 - [ ] **Open-redirect guard** — visit `/sign-in?callbackUrl=https://evil.com` → after sign-in you land on `/`, not the external URL. (Try `callbackUrl=//evil.com` too.)
 - [ ] **Register `bob`** in a private/incognito window so you have a second account ready.
+- [ ] **GitHub OAuth (first sign-in)** — click "Continue with GitHub" on `/sign-in`, approve app, and verify you return to the callback path with a valid session.
+- [ ] **GitHub OAuth (repeat sign-in)** — sign out and sign back in with the same GitHub account; verify the same app user is reused (no duplicate account).
+- [ ] **Google OAuth (first sign-in)** — repeat the same check with Google provider.
+- [ ] **Google OAuth (repeat sign-in)** — sign out and sign back in with the same Google account; verify user reuse.
+- [ ] **OAuth username collision check** — use two OAuth accounts whose email local-parts sanitize to the same base username; second account still signs in with a unique suffixed username.
+- [ ] **Missing OAuth email guard** — test provider/account scenario with no email (or simulate in test provider) and verify sign-in fails with a clear message, with no user created.
 
 ## 2. Composer & global feed (`/`, "For you")
 
@@ -128,6 +134,11 @@ Use two windows (`alice` signed in, `bob` signed in incognito).
 - [ ] **Stale session** — delete your session cookie in DevTools, then try to compose / like → app handles 401 cleanly.
 - [ ] **Direct API hits via `curl.exe`** (PowerShell `Invoke-RestMethod` hides bodies — see [`AGENTS.md`](../AGENTS.md) gotchas):
   - `POST /api/posts` without auth → 401.
+  - `POST /api/posts` without auth is blocked by `proxy.ts` (401 JSON) before route logic.
+  - `POST /api/posts/[id]/like` and `DELETE /api/posts/[id]/like` without auth → 401.
+  - `POST /api/users/:username/follow` and `DELETE /api/users/:username/follow` without auth → 401.
+  - `GET /api/posts` and `GET /api/posts/feed` remain accessible when signed out.
+  - `POST /api/auth/register` and `/api/auth/*` remain reachable while signed out.
   - `POST /api/posts` with auth + invalid body → 400 with zod error.
   - `GET /api/posts?cursor=garbage` → 400.
   - `POST /api/users/nonexistent/follow` while signed in → 404.

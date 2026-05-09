@@ -4,6 +4,19 @@
 
 ---
 
+### 2026-05-09 — Auth hardening: OAuth providers + proxy write-route protection
+
+- **Branch:** `feat/auth-hardening`
+- **Commits:** pending / local only
+- **Scope:** Completed the deferred `auth` + `middleware` slices: added GitHub/Google OAuth to Auth.js v5 with first-sign-in user provisioning in Node-only `lib/auth.ts`, and populated `proxy.ts` to block unauthenticated write API mutations with `401` JSON while leaving public reads/auth endpoints accessible.
+- **Files touched:** `lib/auth.ts`, `app/sign-in/page.tsx`, `app/sign-in/sign-in-form.tsx`, `proxy.ts`, `README.md`, `docs/PLAN.md`, `docs/QA-CHECKLIST.md`
+- **Decisions / policy:** Kept JWT sessions and Mongoose-only data access (no adapter). OAuth provisioning normalizes email, derives username from sanitized local-part (`^[a-z0-9_]+$`), retries collisions with a short random suffix, and caps retries with a bounded attempt count to avoid unbounded loops.
+- **Env additions:** `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` documented in README (no secrets committed).
+- **Verification target:** `npx tsc --noEmit`, `npm run build`, browser OAuth smoke checks, and curl checks for proxy-gated write routes plus anonymous read routes.
+- **PR / link:** to open from `feat/auth-hardening` with title `feat(auth): GitHub + Google OAuth and proxy.ts write-route protection`.
+
+---
+
 ### 2026-05-09 — UX polish: profile dropdown link + responsive touch targets
 
 - **Branch:** `feat/ux-polish`

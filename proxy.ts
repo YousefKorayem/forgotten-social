@@ -3,25 +3,27 @@ import authConfig from "@/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-const PROTECTED_PATHS: string[] = [
-  // Add path prefixes here as we build protected routes, e.g.:
-  // "/compose",
-  // "/settings",
-];
+const WRITE_METHODS = new Set(["POST", "DELETE"]);
+
+function isWriteProtectedApiRoute(pathname: string, method: string) {
+  if (!WRITE_METHODS.has(method)) return false;
+
+  if (pathname === "/api/posts" && method === "POST") return true;
+  if (/^\/api\/posts\/[^/]+\/like$/.test(pathname)) return true;
+  if (/^\/api\/users\/[^/]+\/follow$/.test(pathname)) return true;
+
+  return false;
+}
 
 export default auth((req) => {
   const pathname = req.nextUrl.pathname;
-  const isProtected = PROTECTED_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`)
-  );
+  const method = req.method.toUpperCase();
 
-  if (isProtected && !req.auth) {
-    const signInUrl = new URL("/sign-in", req.nextUrl.origin);
-    signInUrl.searchParams.set("callbackUrl", pathname);
-    return Response.redirect(signInUrl);
+  if (isWriteProtectedApiRoute(pathname, method) && !req.auth) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/api/posts", "/api/posts/:path*", "/api/users/:path*/follow"],
 };
