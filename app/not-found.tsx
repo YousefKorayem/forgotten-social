@@ -24,15 +24,23 @@ export default async function NotFound() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 sm:flex-row">
-          <Button asChild className="w-full sm:w-auto">
+          <Button asChild className="min-h-10 w-full sm:w-auto">
             <Link href="/">Back to home</Link>
           </Button>
           {session?.user ? (
-            <Button variant="outline" asChild className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              asChild
+              className="min-h-10 w-full sm:w-auto"
+            >
               <Link href={`/${session.user.username}`}>Your profile</Link>
             </Button>
           ) : (
-            <Button variant="outline" asChild className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              asChild
+              className="min-h-10 w-full sm:w-auto"
+            >
               <Link href="/sign-in">Sign in</Link>
             </Button>
           )}

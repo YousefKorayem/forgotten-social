@@ -196,7 +196,7 @@ export function SignUpForm() {
             />
             <Button
               type="submit"
-              className="w-full"
+              className="min-h-10 w-full"
               disabled={form.formState.isSubmitting}
             >
               Create account

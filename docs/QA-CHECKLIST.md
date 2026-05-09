@@ -109,8 +109,8 @@ Use two windows (`alice` signed in, `bob` signed in incognito).
 ## 8. Header / `UserNav`
 
 - [ ] Avatar dropdown shows correct username/name.
-- [ ] **Profile** link in the dropdown (if present) goes to `/[your-username]`.
-- [ ] **Sign out** clears session immediately and redirects sensibly.
+- [x] **Profile** link in the dropdown (if present) goes to `/[your-username]`.
+- [x] **Sign out** clears session immediately and redirects sensibly.
 - [ ] No hydration warning in the dev console on initial paint of the header (the Auth UI report flagged a brief one — worth re-checking).
 
 ## 9. Responsive / visual

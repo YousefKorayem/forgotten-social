@@ -1,6 +1,7 @@
 "use client";
 
-import { SignOutIcon } from "@phosphor-icons/react/ssr";
+import { SignOutIcon, UserIcon } from "@phosphor-icons/react/ssr";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,9 +23,9 @@ type SessionUser = {
   image?: string | null;
 };
 
-type UserNavDropdownProps = {
+type UserNavDropdownProps = Readonly<{
   user: SessionUser;
-};
+}>;
 
 function initials(user: SessionUser) {
   const fromName = user.name?.trim();
@@ -44,7 +45,7 @@ export function UserNavDropdown({ user }: UserNavDropdownProps) {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full"
+          className="size-10 rounded-full"
           aria-label="Account menu"
         >
           <Avatar size="sm">
@@ -63,7 +64,14 @@ export function UserNavDropdown({ user }: UserNavDropdownProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem className="min-h-10" asChild>
+          <Link href={`/${user.username}`}>
+            <UserIcon size={16} weight="regular" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem
+          className="min-h-10"
           variant="destructive"
           onClick={() => signOut({ callbackUrl: "/" })}
         >
