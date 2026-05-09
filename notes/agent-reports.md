@@ -4,6 +4,24 @@
 
 ---
 
+### 2026-05-09 — UX polish: profile dropdown link + responsive touch targets
+
+- **Branch:** `feat/ux-polish`
+- **Commits:** pending / local only
+- **Scope:** Shipped backlog slices for `UserNavDropdown` profile access and responsive/touch-target polish at 375/768/1024 breakpoints without changing app design language.
+- **Files touched:** `components/user-nav-dropdown.tsx`, `components/user-nav.tsx`, `components/theme-toggle.tsx`, `components/home-feed.tsx`, `components/composer.tsx`, `components/like-button.tsx`, `components/follow-button.tsx`, `app/sign-in/sign-in-form.tsx`, `app/sign-up/sign-up-form.tsx`, `app/not-found.tsx`, `docs/QA-CHECKLIST.md`
+- **Screen-size issues found + fixes:**
+  - Header controls were sub-40px; set `UserNav` trigger, signed-out header CTA, and theme toggle to 40px targets.
+  - Dropdown actions were compact on mobile; set Profile and Sign out menu rows to `min-h-10`.
+  - Home tab triggers and composer submit CTA were below touch-target guidance; raised tab row/trigger and submit button to 40px targets.
+  - Like/follow action controls were too small (`h-auto`/`size="sm"` defaults); moved to `min-h-10` touch-safe sizing while preserving existing styling tokens.
+  - Auth and 404 CTA buttons were short on narrow screens; set primary/secondary actions to `min-h-10` so cards remain readable and tappable at 375px.
+- **Verification:** `npx tsc --noEmit` exit **0**; `npm run build` success with unchanged route list (`/`, `/sign-in`, `/sign-up`, `/[username]`, `/_not-found`, `/api/posts`, `/api/posts/feed`, `/api/posts/[id]/like`, `/api/users/[username]/follow`, `/api/auth/register`, `/api/auth/[...nextauth]`).
+- **QA notes (sections 8/9):** Marked **Profile link** and **Sign out** as passed in `docs/QA-CHECKLIST.md` §8. Remaining §8/§9 checks left unchecked because browser-based validation became environment-constrained after Atlas connectivity failures (`MongooseServerSelectionError`), so profile/visual checks could not be completed with confidence.
+- **PR / link:** to open from `feat/ux-polish` with title `feat(ui): profile dropdown link and responsive audit polish`.
+
+---
+
 ### 2026-05-08 — QA follow-ups (404 auth, theme console, stale JWT, feed session, audit)
 
 - **Branch:** `fix/qa-followups`

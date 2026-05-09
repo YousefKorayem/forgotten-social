@@ -10,7 +10,7 @@ export async function UserNav() {
 
   if (!session?.user) {
     return (
-      <Button variant="default" asChild>
+      <Button variant="default" className="min-h-10 px-3" asChild>
         <Link href="/sign-in">Sign In</Link>
       </Button>
     );

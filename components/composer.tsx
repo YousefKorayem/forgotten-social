@@ -107,7 +107,7 @@ export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button asChild>
+          <Button className="min-h-10" asChild>
             <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>
               <SignInIcon className="size-4" weight="regular" />
               Sign in
@@ -137,7 +137,7 @@ export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
             <AlertDescription className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>{submitError}</span>
               {submitError.includes("sign in") ? (
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="outline" size="sm" className="min-h-10" asChild>
                   <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>Sign in</Link>
                 </Button>
               ) : null}
@@ -171,7 +171,7 @@ export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
           <div className="flex justify-end">
             <Button
               type="submit"
-              className="w-full sm:w-auto"
+              className="min-h-10 w-full sm:w-auto"
               disabled={submitting || !content.trim()}
             >
               <PaperPlaneTiltIcon className="size-4" weight="regular" />

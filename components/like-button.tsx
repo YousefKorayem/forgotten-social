@@ -118,7 +118,7 @@ export function LikeButton({ post, className }: LikeButtonProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-auto gap-1.5 px-1 py-0 text-muted-foreground hover:text-foreground"
+          className="min-h-10 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
           asChild
         >
           <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>
@@ -137,7 +137,12 @@ export function LikeButton({ post, className }: LikeButtonProps) {
         <Alert variant="destructive" className="py-2">
           <AlertDescription className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
             <span>{authHint}</span>
-            <Button variant="outline" size="sm" className="shrink-0" asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-10 shrink-0"
+              asChild
+            >
               <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>Sign in</Link>
             </Button>
           </AlertDescription>
@@ -149,7 +154,7 @@ export function LikeButton({ post, className }: LikeButtonProps) {
         size="sm"
         disabled={pending}
         className={cn(
-          "h-auto gap-1.5 px-1 py-0",
+          "min-h-10 gap-1.5 px-2",
           liked
             ? "text-rose-600 hover:text-rose-600 dark:text-rose-500 dark:hover:text-rose-500"
             : "text-muted-foreground hover:text-foreground"

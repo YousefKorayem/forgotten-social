@@ -29,9 +29,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { signInSchema, type SignInInput } from "@/lib/validations/auth";
 
-type SignInFormProps = {
+type SignInFormProps = Readonly<{
   callbackUrl: string;
-};
+}>;
 
 export function SignInForm({ callbackUrl }: SignInFormProps) {
   const router = useRouter();
@@ -118,7 +118,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
             />
             <Button
               type="submit"
-              className="w-full"
+              className="min-h-10 w-full"
               disabled={form.formState.isSubmitting}
             >
               Sign in

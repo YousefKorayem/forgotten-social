@@ -36,9 +36,13 @@ export function HomeFeed() {
 
   return (
     <Tabs defaultValue="for-you" className="w-full gap-4">
-      <TabsList variant="line" className="grid h-9 w-full grid-cols-2">
-        <TabsTrigger value="for-you">For you</TabsTrigger>
-        <TabsTrigger value="following">Following</TabsTrigger>
+      <TabsList variant="line" className="grid h-10 w-full grid-cols-2">
+        <TabsTrigger className="min-h-10" value="for-you">
+          For you
+        </TabsTrigger>
+        <TabsTrigger className="min-h-10" value="following">
+          Following
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="for-you" className="mt-0 space-y-8">
         <Composer onPostCreated={(post) => setInjectPost(post)} />

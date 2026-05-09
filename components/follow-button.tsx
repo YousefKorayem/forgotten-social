@@ -41,7 +41,7 @@ export function FollowButton({
   if (status === "loading") {
     return (
       <div
-        className="h-9 min-w-[7rem] animate-pulse rounded-full bg-muted"
+        className="h-10 min-w-[7rem] animate-pulse rounded-full bg-muted"
         aria-hidden
       />
     );
@@ -129,7 +129,12 @@ export function FollowButton({
         <Alert variant="destructive" className="max-w-sm py-2">
           <AlertDescription className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
             <span>{authHint}</span>
-            <Button variant="outline" size="sm" className="shrink-0" asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-10 shrink-0"
+              asChild
+            >
               <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>Sign in</Link>
             </Button>
           </AlertDescription>
@@ -139,7 +144,7 @@ export function FollowButton({
         type="button"
         variant={following ? "secondary" : "default"}
         size="sm"
-        className="rounded-full"
+        className="min-h-10 rounded-full px-3"
         disabled={pending}
         onClick={following ? unfollow : follow}
       >
