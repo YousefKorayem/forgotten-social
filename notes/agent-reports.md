@@ -7,7 +7,7 @@
 ### 2026-05-09 — Wrap-up: OAuth polish, feed fixes, docs sync
 
 - **Branch:** `feat/auth-hardening` (follow-up commits on top of PR #17 slice)
-- **Commits:** `18d487c` `chore: wrap up auth slice docs and feed/composer follow-ups`
+- **Commits:** `18d487c` `chore: wrap up auth slice docs and feed/composer follow-ups`; `4e90b40` `chore(docs): note wrap-up commit hash in agent-reports`
 - **Scope:** Post-merge UX and correctness: OAuth sign-in buttons (pointer cursor, loading copy, `URLSearchParams` / hydration-safe flows), README OAuth callback troubleshooting and env aliases (`GITHUB_ID` / `GOOGLE_CLIENT_ID` fallbacks in `lib/auth.ts`), composer **sign-in** link via `usePathname` + `URLSearchParams` (fixes React hydration mismatch on `callbackUrl`), `FeedList` merge so injected posts survive slow initial fetch, global/following feeds aligned on **`createdAt` + `_id`** cursor + `Post` compound index in `models/Post.ts`.
 - **Docs:** `AGENTS.md` snapshot (OAuth + proxy no longer deferred), `docs/PLAN.md` (feed cursor decision + gotchas + API sketch), `docs/QA-CHECKLIST.md` (OAuth env, compose-while-loading, following-feed 401 when signed out), `docs/FEATURE-BACKLOG.md` (mark OAuth + proxy shipped with pointers).
 - **Verification:** `npx tsc --noEmit` exit **0** after changes.
