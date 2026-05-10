@@ -4,6 +4,15 @@
 
 ---
 
+### 2026-05-10 — Production deployment: Vercel + Atlas
+
+- **Branch:** `chore/vercel-deploy-docs`
+- **Scope:** Documented the completed Vercel production deployment at `https://forgotten-social.vercel.app`, including Vercel env vars, Atlas connection gotcha (`/forgotten_social` DB path), production OAuth callback URLs, and post-deploy smoke checks.
+- **Manual setup completed:** Atlas Network Access updated for Vercel, a production DB user was created, production `AUTH_SECRET` generated outside Cursor, Vercel env vars configured, `AUTH_URL` set, production GitHub and Google OAuth apps configured, and deployment redeployed after env changes.
+- **Verification:** `npm run build` passed locally before deploy. Production `/api/health` returned a connected DB; landing page loaded; credentials sign-up/sign-in, post creation, profile navigation, sign-out/sign-in, GitHub OAuth, and Google OAuth all worked in production.
+
+---
+
 ### 2026-05-09 — Wrap-up: OAuth polish, feed fixes, docs sync
 
 - **Branch:** `feat/auth-hardening` (follow-up commits on top of PR #17 slice)

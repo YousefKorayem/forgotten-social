@@ -1,6 +1,8 @@
 # ForgottenSocial
 
-ForgottenSocial is a small Twitter-style social app built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js, and MongoDB/Mongoose. The MVP supports credentials auth, profiles, text posts, likes, follows, and global/following feeds.
+ForgottenSocial is a small Twitter-style social app built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js, and MongoDB/Mongoose. The MVP supports credentials auth, GitHub/Google OAuth, profiles, text posts, likes, follows, and global/following feeds.
+
+Live app: [https://forgotten-social.vercel.app](https://forgotten-social.vercel.app)
 
 ## Prerequisites
 
@@ -75,4 +77,51 @@ npm run build
 
 ## Deployment
 
-The app is Vercel-compatible. Configure the same environment variables in the hosting provider and keep MongoDB Atlas network access aligned with the deployed runtime.
+The production app is deployed on Vercel at [forgotten-social.vercel.app](https://forgotten-social.vercel.app).
+
+### Vercel setup
+
+Import the GitHub repo into Vercel with the **Next.js** framework preset and the default root directory (`./`). Keep the build settings on Vercel defaults; the app builds with:
+
+```bash
+npm run build
+```
+
+Configure these environment variables for **Production** and **Preview**:
+
+```bash
+MONGODB_URI="mongodb+srv://..."
+AUTH_SECRET="replace-with-a-production-only-secret"
+AUTH_URL="https://forgotten-social.vercel.app"
+AUTH_GITHUB_ID="github-production-oauth-client-id"
+AUTH_GITHUB_SECRET="github-production-oauth-client-secret"
+AUTH_GOOGLE_ID="google-production-oauth-client-id"
+AUTH_GOOGLE_SECRET="google-production-oauth-client-secret"
+```
+
+Production notes:
+
+- `MONGODB_URI` must include the database path, e.g. `/forgotten_social` before the query string. Without it, Mongoose may connect to the default `test` database.
+- `AUTH_SECRET` should be generated separately from local development secrets.
+- Vercel does not redeploy automatically after environment variable changes; redeploy from the **Deployments** tab after editing env vars.
+- MongoDB Atlas Network Access must allow the Vercel runtime. For this portfolio deployment, the project uses Atlas network access plus database-user credentials rather than a private endpoint.
+
+### OAuth callback URLs (production)
+
+Register separate production OAuth apps/clients so local and production callbacks stay independent:
+
+| Provider | Production callback URL |
+|----------|-------------------------|
+| GitHub | `https://forgotten-social.vercel.app/api/auth/callback/github` |
+| Google | `https://forgotten-social.vercel.app/api/auth/callback/google` |
+
+For Google, also add `https://forgotten-social.vercel.app` to **Authorized JavaScript origins**.
+
+### Production smoke checks
+
+After each deployment:
+
+- Visit `/api/health` and confirm the DB state is `connected`.
+- Sign up with credentials, create a post, visit the profile page, sign out, and sign back in.
+- Smoke test GitHub and Google OAuth from `/sign-in`.
+- Verify the global feed shows expected Atlas data from the `forgotten_social` database.

@@ -59,7 +59,7 @@ If the maintainer explicitly asks the planning agent to implement something, tha
 | Framework | Next.js 16 (App Router) + TypeScript |
 | Styling | Tailwind CSS v4 + shadcn/ui (New York style, Lyra preset, Zinc base) |
 | DB | MongoDB Atlas + Mongoose |
-| Auth | NextAuth.js (Auth.js v5), JWT sessions, Credentials (OAuth deferred) |
+| Auth | NextAuth.js (Auth.js v5), JWT sessions, Credentials + GitHub/Google OAuth |
 | Icons | `@phosphor-icons/react/ssr` — use suffixed names (e.g. `SunIcon`, `MoonIcon`) |
 
 ## Conventions
@@ -68,7 +68,7 @@ If the maintainer explicitly asks the planning agent to implement something, tha
 - **Commits**: [Conventional Commits](https://www.conventionalcommits.org/) — `type(scope): description` (lowercase description after the colon). Examples: `feat(api): add posts route`, `fix(models): align Post timestamps`, `chore(docs): update PLAN after feed-ui merge`. Prefer **`chore(docs): …`** for documentation-only changes; avoid a loose **`docs:`** prefix without a conventional type/scope.
 - **Merges**: **regular merge commits** into `main` (no squash) — preserves verbose history for review and portfolio narrative.
 - **After a PR merges:** Update local `main` (`git checkout main`, then `git pull origin main`), then remove the local feature branch if you no longer need it: `git branch -d <branch-name>` (safe delete if Git sees it as merged). Use `git branch -D <branch-name>` only if you intentionally force-delete despite Git’s warning.
-- **Secrets**: never commit `.env.local`. Required vars include `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL` (see README when present).
+- **Secrets**: never commit `.env.local`. Required vars include `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL`, and OAuth credentials when providers are enabled (see README).
 
 ## Pointers (read before large changes)
 

@@ -64,7 +64,7 @@ isProject: false
 - **Surfaces shipped:** `/` (composer + **For you** / **Following** tabs), `/sign-in`, `/sign-up`, `/[username]` profile, APIs under `app/api/` (`posts`, `posts/feed`, `posts/[id]/like`, `users/[username]/follow`, `auth/*`, `health`). Shared feed logic: `lib/post-feed-shared.ts`, `lib/feed-constants.ts`, `lib/serialize-feed-post.ts`.
 - **Env (local):** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL`, plus OAuth vars (`AUTH_GITHUB_*`, `AUTH_GOOGLE_*` and aliases documented in [`README.md`](../README.md)); never commit `.env.local`.
 - **Workflow:** Feature branches + PRs + **regular merge** to `main` (no squash). Build agents append [`notes/agent-reports.md`](../notes/agent-reports.md); planning agent edits this file + `AGENTS.md` only by default.
-- **Next conversations:** QA pass from [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md), optional features from [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md), deployment (Vercel + Atlas), portfolio README/screenshots — or declare “done” and freeze.
+- **Next conversations:** QA pass from [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md), optional features from [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md), automated tests/CI, Docker local runtime docs, portfolio README/screenshots — or declare “done” and freeze.
 
 ## Stack (locked in)
 
@@ -72,14 +72,14 @@ isProject: false
 - **Styling**: Tailwind CSS v4 + shadcn/ui (New York / Lyra / Zinc)
 - **DB**: MongoDB Atlas + Mongoose
 - **Auth**: NextAuth.js (Auth.js v5) with Credentials + GitHub/Google OAuth
-- **Deployment** (later): Vercel + MongoDB Atlas
+- **Deployment**: Vercel + MongoDB Atlas (`https://forgotten-social.vercel.app`)
 
 ## Current state
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
 - **Merged to `main` (MVP path):** Credentials auth + registration; **`posts-api`** / **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (tabs + `/api/posts/feed`); **`polish`** — README setup (**`MONGODB_URI`**, **`AUTH_SECRET`**, **`AUTH_URL`**), improved empty states, **`FeedList`** skeletons, composer feedback, **`app/not-found.tsx`**, responsive tweaks on composer/profile. In-repo roadmap: this file and [`AGENTS.md`](../AGENTS.md). PRs merged with **regular merge**; run **`git pull origin main`** on each clone after merges.
 - **Auth + edge hardening (2026-05):** GitHub/Google OAuth, JWT unchanged, `proxy.ts` for write APIs, OAuth env/callback docs in README, feed pagination by **`createdAt` + `_id`**, composer hydration + feed inject fixes — tracked in [`notes/agent-reports.md`](../notes/agent-reports.md); land via [PR #17](https://github.com/YousefKorayem/forgotten-social/pull/17) (or follow-up commits on the same branch) then **`git pull origin main`**.
-- **Deferred (optional extensions):** Deployment (e.g. Vercel + Atlas), automated tests/CI, notifications, comments, media uploads, and other backlog items in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
+- **Deferred (optional extensions):** Automated tests/CI, Docker local runtime, notifications, comments, media uploads, and other backlog items in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
 - **QA / feature planning:** Manual QA bugs live in [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). New feature ideas and portfolio upgrades live in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
 - **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials + GitHub + Google auth, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` API write-route protection at the edge. Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
@@ -100,6 +100,8 @@ isProject: false
 ## Gotchas encountered
 
 - **MongoDB Atlas:** Network Access must allow your current IP; otherwise “bad auth” / connection failures despite correct credentials.
+- **Vercel + Atlas:** Production `MONGODB_URI` must include the database name path (`/forgotten_social`) before the query string. Atlas's copied driver string may omit it, causing Mongoose to read/write the default `test` database instead.
+- **Vercel env changes:** Editing environment variables does not update an existing deployment; redeploy from Vercel's **Deployments** tab after changing secrets, `AUTH_URL`, or OAuth credentials.
 - **Edge runtime:** `proxy.ts` / middleware cannot import Mongoose or the full NextAuth bundle that pulls Node `stream` — use split auth config (see Decisions log).
 - **Next.js 16:** `middleware.ts` renamed to **`proxy.ts`**; codemod: `npx @next/codemod@canary middleware-to-proxy .`
 - **Tailwind v4 + Geist:** Map `--font-sans` / `--font-mono` in `app/globals.css` `@theme inline`; add `font-sans` on `<body>` or fonts fall back to Times New Roman.

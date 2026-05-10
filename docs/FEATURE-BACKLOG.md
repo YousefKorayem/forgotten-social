@@ -114,6 +114,7 @@
 
 ### Deployment
 
+- **Status:** **Shipped** (2026-05) — production is live on Vercel at [`https://forgotten-social.vercel.app`](https://forgotten-social.vercel.app) with MongoDB Atlas, credentials auth, GitHub OAuth, and Google OAuth smoke-tested.
 - **Type:** Production readiness.
 - **Why:** A live URL is valuable for portfolio review and surfaces real-world env/config issues.
 - **Suggested scope:** Vercel deployment with Atlas, env vars, and README deploy notes.
