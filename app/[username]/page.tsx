@@ -81,7 +81,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     Follow.countDocuments({ following: user._id }),
     Follow.countDocuments({ follower: user._id }),
     Post.find({ author: user._id })
-      .sort({ _id: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .limit(POST_LIMIT + 1)
       .populate<{ username: string; name: string; image?: string | null }>({
         path: "author",

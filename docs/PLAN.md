@@ -16,13 +16,13 @@ todos:
     status: completed
   - id: auth
     content: Configure NextAuth.js v5 in lib/auth.ts with Credentials + GitHub + Google, JWT session, signIn callback that upserts User; expose handlers in app/api/auth/[...nextauth]/route.ts
-    status: in_progress
+    status: completed
   - id: auth-ui
     content: Build sign-in and sign-up pages with shadcn Form + zod validation; add /api/auth/register route for credentials signup with bcrypt
     status: completed
   - id: middleware
-    content: Add proxy.ts (Next.js 16 middleware) to protect write routes and redirect unauthenticated users to /sign-in
-    status: in_progress
+    content: Add proxy.ts (Next.js 16 middleware) to protect write API routes at the edge and return 401 JSON for unauthenticated mutations
+    status: completed
   - id: posts-api
     content: Implement POST /api/posts (create) and GET /api/posts (global feed, cursor-paginated)
     status: completed
@@ -57,14 +57,14 @@ isProject: false
 
 **Last aligned:** 2026-05 — update this subsection when the product or `main` reality drifts.
 
-- **What this is:** Twitter-style MVP in Next.js 16: register/sign-in, global + following feeds, profiles, follow/unfollow, like/unlike, text posts (≤280 chars), MongoDB + Mongoose, NextAuth v5 with **Credentials** and **JWT** sessions.
+- **What this is:** Twitter-style MVP in Next.js 16: register/sign-in (**credentials + GitHub + Google OAuth**), global + following feeds, profiles, follow/unfollow, like/unlike, text posts (≤280 chars), MongoDB + Mongoose, NextAuth v5 with **JWT** sessions and **edge `proxy.ts`** protection for write APIs.
 - **Where the code lives:** Git repo root = `forgotten-social/` (parent folder `ForgottenSocial/` is often *not* the git root on disk).
 - **MVP feature work (YAML `todos` above):** `scaffold` through `polish` are **`completed`** — the app is portfolio-ready for the scope below.
-- **Still open in YAML (optional extensions, not blocking MVP):** **`auth`** — add GitHub/Google OAuth providers in `lib/auth.ts` + env; **`middleware`** — populate **`proxy.ts`** protected paths so write routes redirect unauthenticated users (split **`auth.config.ts`** / **`lib/auth.ts`** pattern already avoids Edge + Mongoose issues).
+- **Still open in YAML (optional extensions, not blocking MVP):** None. Current deferred work is now tracked in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md) / [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
 - **Surfaces shipped:** `/` (composer + **For you** / **Following** tabs), `/sign-in`, `/sign-up`, `/[username]` profile, APIs under `app/api/` (`posts`, `posts/feed`, `posts/[id]/like`, `users/[username]/follow`, `auth/*`, `health`). Shared feed logic: `lib/post-feed-shared.ts`, `lib/feed-constants.ts`, `lib/serialize-feed-post.ts`.
-- **Env (local):** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL` — see [`README.md`](../README.md); never commit `.env.local`.
+- **Env (local):** `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL`, plus OAuth vars (`AUTH_GITHUB_*`, `AUTH_GOOGLE_*` and aliases documented in [`README.md`](../README.md)); never commit `.env.local`.
 - **Workflow:** Feature branches + PRs + **regular merge** to `main` (no squash). Build agents append [`notes/agent-reports.md`](../notes/agent-reports.md); planning agent edits this file + `AGENTS.md` only by default.
-- **Next conversations:** QA follow-ups from [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md), optional features from [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md), OAuth and/or `proxy.ts` hardening, deployment (Vercel + Atlas), portfolio README/screenshots — or declare “done” and freeze.
+- **Next conversations:** QA pass from [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md), optional features from [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md), deployment (Vercel + Atlas), portfolio README/screenshots — or declare “done” and freeze.
 
 ## Stack (locked in)
 
@@ -78,9 +78,10 @@ isProject: false
 
 - **App root:** `forgotten-social/` (workspace parent is often `ForgottenSocial/`).
 - **Merged to `main` (MVP path):** Credentials auth + registration; **`posts-api`** / **`feed-ui`**; **`profile`**; **`follow`**; **`like`**; **`following-feed`** (tabs + `/api/posts/feed`); **`polish`** — README setup (**`MONGODB_URI`**, **`AUTH_SECRET`**, **`AUTH_URL`**), improved empty states, **`FeedList`** skeletons, composer feedback, **`app/not-found.tsx`**, responsive tweaks on composer/profile. In-repo roadmap: this file and [`AGENTS.md`](../AGENTS.md). PRs merged with **regular merge**; run **`git pull origin main`** on each clone after merges.
-- **Deferred (optional extensions):** **`auth`** — GitHub/Google OAuth (credentials-only shipped). **`middleware`** — tighten **`proxy.ts`** for write routes. Deploy (e.g. Vercel + Atlas) when ready — see README / Decisions log.
+- **Auth + edge hardening (2026-05):** GitHub/Google OAuth, JWT unchanged, `proxy.ts` for write APIs, OAuth env/callback docs in README, feed pagination by **`createdAt` + `_id`**, composer hydration + feed inject fixes — tracked in [`notes/agent-reports.md`](../notes/agent-reports.md); land via [PR #17](https://github.com/YousefKorayem/forgotten-social/pull/17) (or follow-up commits on the same branch) then **`git pull origin main`**.
+- **Deferred (optional extensions):** Deployment (e.g. Vercel + Atlas), automated tests/CI, notifications, comments, media uploads, and other backlog items in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
 - **QA / feature planning:** Manual QA bugs live in [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). New feature ideas and portfolio upgrades live in [`docs/FEATURE-BACKLOG.md`](FEATURE-BACKLOG.md).
-- **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials provider, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` matcher scaffold (protected paths may still be empty). Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
+- **Done (baseline):** Scaffold (Next 16, Tailwind, shadcn Lyra/Zinc), Mongo `lib/db.ts` + Atlas, Mongoose models (`User`, `Post`, `Follow`, `Like`), health API smoke test, NextAuth v5 split config (`auth.config.ts` + `lib/auth.ts`), credentials + GitHub + Google auth, `/api/auth/register`, sign-in/sign-up pages, shared zod validations (`lib/validations/auth.ts`), `UserNav` in layout, JWT session augmentation in `types/next-auth.d.ts`, `proxy.ts` API write-route protection at the edge. Agent report: [`notes/agent-reports.md`](../notes/agent-reports.md).
 - **Handoff:** **Planning agent** — read [`AGENTS.md`](../AGENTS.md) (planning vs build), then this file, then [`notes/agent-reports.md`](../notes/agent-reports.md). **Build agent** — follow this plan, ship code, append to `notes/agent-reports.md`.
 
 ## Decisions log
@@ -89,6 +90,8 @@ isProject: false
 - **Passwords:** `bcryptjs` (pure JS) for hashing/compare; avoid native `bcrypt` build friction on Windows/CI.
 - **UI kit:** shadcn/ui New York style, **Lyra** preset, **Zinc** base color (tweakable later).
 - **NextAuth + Edge:** Split config — `auth.config.ts` is edge-safe (no DB imports); `lib/auth.ts` spreads it and adds Credentials + Node-only logic (`dbConnect`, `User.findOne`, `bcrypt.compare`).
+- **OAuth provisioning policy:** On first GitHub/Google sign-in, create/find a `User` by normalized email. Username is derived from sanitized email local-part (`^[a-z0-9_]+$`), and on collisions retries with a short random suffix for a bounded number of attempts.
+- **Feed pagination:** Global and following feeds use a **compound cursor** `(createdAt, _id)` (base64url JSON in `cursor` query param) so ordering matches wall-clock recency even when seed data uses synthetic ObjectIds. `Post` indexes include `{ createdAt: -1, _id: -1 }` to support the query pattern.
 - **Icons:** `@phosphor-icons/react/ssr`; use suffixed exports (e.g. `SunIcon`, `MoonIcon`) — bare `Sun`/`Moon` deprecated/removed in v2.
 - **Git:** Feature branches + PRs; **regular merges into `main` (no squash)** per maintainer preference.
 - **MVP posts:** Text-only (no images in first ship).
@@ -108,6 +111,8 @@ isProject: false
 - **Theme / Next.js 16 + Turbopack:** `next-themes` `ThemeProvider` injects an inline `<script>` via React; React 19 client rendering logs *Encountered a script tag while rendering React component* on routes such as `/_not-found`. This project uses a **`beforeInteractive`** `next/script` boot snippet (`lib/theme-boot-script.ts`) plus a small client **`ThemeProvider`** fork (`components/theme-provider.tsx`) so no `<script>` is rendered under the client provider tree. Do not reintroduce `next-themes` without checking whether this warning returns.
 - **`npm audit` — PostCSS (moderate, transitive via Next):** `postcss@<8.5.10` is nested under `next@16.2.x`. `npm audit fix --force` suggests an incorrect downgrade of Next; wait for a Next release that bundles fixed PostCSS (or overrides only if the team accepts the risk). Not addressed on `fix/qa-followups`.
 - **Browser Back sometimes shows a blank page (deferred):** QA saw intermittent blank content after client Back navigation (e.g. `/` → `/[username]` → Back, or `/sign-in` → `/` → Back). No reliable app-level fix was shipped in this branch; treat as possible Next.js 16 / Turbopack / router cache interaction. Reproduce with DevTools open (console + network), then reassess after a framework upgrade.
+- **Composer sign-in link + hydration:** Avoid SSR/client branches on `window` for `callbackUrl` inside client components — use `usePathname()` and `URLSearchParams` so server and client render the same `href` (fixes React 19 hydration mismatch on `/sign-in?callbackUrl=…`).
+- **FeedList + optimistic create:** When the initial `GET /api/posts` resolves after a newly created post is injected at the top, merge server results with local-only rows so the new post is not overwritten.
 
 > Note on Express: you originally listed Express, but chose "Next.js full-stack". In this setup, Next's route handlers (`app/api/.../route.ts`) replace Express. They use the same Request/Response mental model, so the backend skills still show. If you want to truly demo Express on your resume, we can split the backend out later — say the word and I'll add a `server/` Express+Mongoose API and have Next consume it instead.
 
@@ -203,16 +208,16 @@ export async function dbConnect() {
 - `lib/auth.ts` exports `{ auth, handlers, signIn, signOut }` with `CredentialsProvider` (bcrypt-compared `passwordHash`) plus `GitHubProvider` and `GoogleProvider`.
 - **Session strategy: JWT (chosen).** After sign-in, Auth.js issues a signed/encrypted JWT and stores it in an HTTP-only cookie. Each request decodes the cookie — no DB roundtrip — and that's the session. The DB only stores `User` documents; sessions live in the cookie. This keeps **Mongoose as the only DB layer**, which is what we want to demonstrate.
   - Alternative we considered: the `@auth/mongodb-adapter` "database session" strategy stores sessions/accounts/verification tokens in Mongo and uses the native MongoDB driver alongside Mongoose. We're skipping it because the extra parallel-driver complexity isn't worth the (real but minor) benefits of revocable sessions for an MVP.
-- On first OAuth sign-in, the `signIn` callback upserts a `User` doc (auto-generates `username` from email).
+- On first OAuth sign-in, the `signIn` callback creates or reuses a `User` doc by normalized email and auto-generates a collision-safe `username`.
 - Add `session.user.id` and `session.user.username` via the `jwt` and `session` callbacks so the client knows who's signed in.
-- [`proxy.ts`](../proxy.ts) (middleware) gates write routes (`/compose`, mutation API routes) and redirects unauthenticated users to `/sign-in`. Edge runtime: use edge-safe NextAuth config only (see Decisions log — split config).
+- [`proxy.ts`](../proxy.ts) (Next.js 16 proxy) gates mutation API routes at the edge and returns `401` JSON for unsigned requests (no API redirects). Edge runtime: use edge-safe NextAuth config only (see Decisions log — split config).
 
 ## API routes (key ones)
 
 - `POST /api/auth/register` — zod-validate, bcrypt-hash, create User
 - `POST /api/posts` — create post (auth required)
-- `GET /api/posts?cursor=...` — global feed, cursor-paginated by `_id`
-- `GET /api/posts/feed?cursor=...` — following-only feed: query `Follow` for current user's following IDs, then `Post.find({ author: { $in: ids } })`
+- `GET /api/posts?cursor=...` — global feed, cursor-paginated by **`createdAt` then `_id`** (see `lib/post-feed-shared.ts`)
+- `GET /api/posts/feed?cursor=...` — following-only feed (auth required): query `Follow` for current user's following IDs, then `Post.find({ author: { $in: ids } })` with the same **`createdAt` + `_id`** cursor as the global feed
 - `POST/DELETE /api/posts/:id/like` — atomic: `Like.create` + `Post.updateOne({$inc:{likeCount:1}})`; on duplicate-key (already liked), return 409
 - `POST/DELETE /api/users/:username/follow` — same pattern with `Follow`
 - `GET /api/users/:username` — profile + post list

@@ -14,6 +14,12 @@ type ErrorBody = {
   error?: string;
 };
 
+function mergePostsPreservingLocal(local: FeedPost[], incoming: FeedPost[]) {
+  const incomingIds = new Set(incoming.map((post) => post.id));
+  const localOnly = local.filter((post) => !incomingIds.has(post.id));
+  return [...localOnly, ...incoming];
+}
+
 type FeedListProps = {
   /** Feed API path (default global feed). */
   apiPath?: string;
@@ -99,7 +105,7 @@ export function FeedList({
     setError(null);
     fetchPage(null)
       .then((data) => {
-        setPosts(data.posts);
+        setPosts((prev) => mergePostsPreservingLocal(prev, data.posts));
         setNextCursor(data.nextCursor);
       })
       .catch((e: unknown) => {
@@ -116,7 +122,7 @@ export function FeedList({
     fetchPage(null)
       .then((data) => {
         if (cancelled) return;
-        setPosts(data.posts);
+        setPosts((prev) => mergePostsPreservingLocal(prev, data.posts));
         setNextCursor(data.nextCursor);
       })
       .catch((e: unknown) => {

@@ -3,6 +3,7 @@
 import { PaperPlaneTiltIcon, SignInIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -23,16 +24,15 @@ type ErrorBody = {
 
 export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const [content, setContent] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitNotice, setSubmitNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const signedIn = status === "authenticated" && !!session?.user;
-  const callbackUrl =
-    globalThis.window === undefined
-      ? "/"
-      : encodeURIComponent(globalThis.window.location.pathname || "/");
+  const callbackUrl = pathname || "/";
+  const signInHref = `/sign-in?${new URLSearchParams({ callbackUrl }).toString()}`;
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
@@ -108,7 +108,7 @@ export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
         </CardHeader>
         <CardContent>
           <Button className="min-h-10" asChild>
-            <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>
+            <Link href={signInHref}>
               <SignInIcon className="size-4" weight="regular" />
               Sign in
             </Link>
@@ -138,7 +138,7 @@ export function Composer({ onPostCreated }: Readonly<ComposerProps>) {
               <span>{submitError}</span>
               {submitError.includes("sign in") ? (
                 <Button variant="outline" size="sm" className="min-h-10" asChild>
-                  <Link href={`/sign-in?callbackUrl=${callbackUrl}`}>Sign in</Link>
+                  <Link href={signInHref}>Sign in</Link>
                 </Button>
               ) : null}
             </AlertDescription>

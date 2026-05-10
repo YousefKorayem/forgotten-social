@@ -4,6 +4,30 @@
 
 ---
 
+### 2026-05-09 — Wrap-up: OAuth polish, feed fixes, docs sync
+
+- **Branch:** `feat/auth-hardening` (follow-up commits on top of PR #17 slice)
+- **Commits:** `18d487c` `chore: wrap up auth slice docs and feed/composer follow-ups`; `4e90b40` / `66e2b5a` `chore(docs): agent-reports commit pointers`
+- **Scope:** Post-merge UX and correctness: OAuth sign-in buttons (pointer cursor, loading copy, `URLSearchParams` / hydration-safe flows), README OAuth callback troubleshooting and env aliases (`GITHUB_ID` / `GOOGLE_CLIENT_ID` fallbacks in `lib/auth.ts`), composer **sign-in** link via `usePathname` + `URLSearchParams` (fixes React hydration mismatch on `callbackUrl`), `FeedList` merge so injected posts survive slow initial fetch, global/following feeds aligned on **`createdAt` + `_id`** cursor + `Post` compound index in `models/Post.ts`.
+- **Docs:** `AGENTS.md` snapshot (OAuth + proxy no longer deferred), `docs/PLAN.md` (feed cursor decision + gotchas + API sketch), `docs/QA-CHECKLIST.md` (OAuth env, compose-while-loading, following-feed 401 when signed out), `docs/FEATURE-BACKLOG.md` (mark OAuth + proxy shipped with pointers).
+- **Verification:** `npx tsc --noEmit` exit **0** after changes.
+- **PR / link:** [feat(auth): GitHub + Google OAuth and proxy.ts write-route protection](https://github.com/YousefKorayem/forgotten-social/pull/17) — merge with **regular merge** per `AGENTS.md`; push any local follow-up commits on the same branch or a small `fix/` branch before merge.
+
+---
+
+### 2026-05-09 — Auth hardening: OAuth providers + proxy write-route protection
+
+- **Branch:** `feat/auth-hardening`
+- **Commits:** `0628c29` `feat(auth): add GitHub and Google OAuth sign-in flow`; `7e44e77` `feat(proxy): gate write API routes at edge`
+- **Scope:** Completed the deferred `auth` + `middleware` slices: added GitHub/Google OAuth to Auth.js v5 with first-sign-in user provisioning in Node-only `lib/auth.ts`, and populated `proxy.ts` to block unauthenticated write API mutations with `401` JSON while leaving public reads/auth endpoints accessible.
+- **Files touched (initial PR):** `lib/auth.ts`, `app/sign-in/page.tsx`, `app/sign-in/sign-in-form.tsx`, `proxy.ts`, `README.md`, `docs/PLAN.md`, `docs/QA-CHECKLIST.md`
+- **Decisions / policy:** Kept JWT sessions and Mongoose-only data access (no adapter). OAuth provisioning normalizes email, derives username from sanitized local-part (`^[a-z0-9_]+$`), retries collisions with a short random suffix, and caps retries with a bounded attempt count to avoid unbounded loops.
+- **Env additions:** `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` documented in README (no secrets committed).
+- **Verification:** `npx tsc --noEmit`, `npm run build`, curl proxy checks; browser OAuth depends on provider app configuration.
+- **PR / link:** https://github.com/YousefKorayem/forgotten-social/pull/17
+
+---
+
 ### 2026-05-09 — UX polish: profile dropdown link + responsive touch targets
 
 - **Branch:** `feat/ux-polish`

@@ -12,12 +12,16 @@ function safeCallbackUrl(url: string | string[] | undefined): string {
 
 export default async function SignInPage({
   searchParams,
-}: {
-  searchParams: Promise<{ callbackUrl?: string | string[] }>;
-}) {
+}: Readonly<{
+  searchParams: Promise<{
+    callbackUrl?: string | string[];
+    error?: string | string[];
+  }>;
+}>) {
   const session = await auth();
   const params = await searchParams;
   const callbackUrl = safeCallbackUrl(params.callbackUrl);
+  const errorCode = Array.isArray(params.error) ? params.error[0] : params.error;
 
   if (session) {
     redirect(callbackUrl);
@@ -25,7 +29,7 @@ export default async function SignInPage({
 
   return (
     <div className="container mx-auto flex flex-1 flex-col items-center justify-center py-8">
-      <SignInForm callbackUrl={callbackUrl} />
+      <SignInForm callbackUrl={callbackUrl} errorCode={errorCode} />
     </div>
   );
 }

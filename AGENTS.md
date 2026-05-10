@@ -15,8 +15,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Read **[`docs/PLAN.md`](docs/PLAN.md) § Snapshot for a fresh planning chat** for the full picture. Quick facts:
 
 - **Repo:** `forgotten-social/` — run `npm run dev` here.
-- **MVP status:** Core todos through **`polish`** are **done** on **`main`** (feeds, profile, follow, like, following tab, README polish, `not-found`).
-- **Deferred:** OAuth (**`auth`** todo), route protection (**`middleware`** / **`proxy.ts`**).
+- **MVP status:** Core todos through **`polish`** are **done**, including **GitHub/Google OAuth** (**`auth`**) and **`proxy.ts`** write-route protection (**`middleware`**) — see YAML + § Snapshot in [`docs/PLAN.md`](docs/PLAN.md).
+- **Deferred:** Deployment (Vercel + Atlas), automated tests/CI, and backlog items in [`docs/FEATURE-BACKLOG.md`](docs/FEATURE-BACKLOG.md) — not blocking the shipped MVP scope.
 - **Truth source:** YAML front-matter + § Current state + § Snapshot in [`docs/PLAN.md`](docs/PLAN.md); implementation history in [`notes/agent-reports.md`](notes/agent-reports.md).
 
 When the maintainer opens a **new** planning chat with an empty context window, **read those files first**—do not rely on an older chat’s summary.

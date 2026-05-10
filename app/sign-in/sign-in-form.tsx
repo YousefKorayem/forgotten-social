@@ -1,7 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignInIcon } from "@phosphor-icons/react/ssr";
+import {
+  CircleNotchIcon,
+  GithubLogoIcon,
+  GoogleLogoIcon,
+  SignInIcon,
+} from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -31,11 +36,25 @@ import { signInSchema, type SignInInput } from "@/lib/validations/auth";
 
 type SignInFormProps = Readonly<{
   callbackUrl: string;
+  errorCode?: string;
 }>;
 
-export function SignInForm({ callbackUrl }: SignInFormProps) {
+function mapAuthError(errorCode?: string) {
+  if (!errorCode) return null;
+  if (errorCode === "oauth_email_missing") {
+    return "Your OAuth provider did not return an email address. Try another account.";
+  }
+  return "Unable to sign in. Please try again.";
+}
+
+export function SignInForm({ callbackUrl, errorCode }: SignInFormProps) {
   const router = useRouter();
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(() =>
+    mapAuthError(errorCode)
+  );
+  const [oauthSubmitting, setOauthSubmitting] = useState<
+    "github" | "google" | null
+  >(null);
 
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
@@ -64,6 +83,20 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
     }
   }
 
+  async function onOAuthSignIn(provider: "github" | "google") {
+    setAuthError(null);
+    setOauthSubmitting(provider);
+    try {
+      /**
+       * Full-page redirect is required for a reliable OAuth/PKCE flow; the
+       * provider sends the user back to callbackUrl after approval.
+       */
+      await signIn(provider, { callbackUrl });
+    } finally {
+      setOauthSubmitting(null);
+    }
+  }
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -73,6 +106,57 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="grid gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-10 w-full gap-2"
+            onClick={() => onOAuthSignIn("github")}
+            disabled={oauthSubmitting !== null || form.formState.isSubmitting}
+            aria-busy={oauthSubmitting === "github"}
+          >
+            {oauthSubmitting === "github" ? (
+              <CircleNotchIcon
+                size={16}
+                className="animate-spin"
+                aria-hidden
+              />
+            ) : (
+              <GithubLogoIcon size={16} aria-hidden />
+            )}
+            {oauthSubmitting === "github"
+              ? "Redirecting to GitHub…"
+              : "Continue with GitHub"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-10 w-full gap-2"
+            onClick={() => onOAuthSignIn("google")}
+            disabled={oauthSubmitting !== null || form.formState.isSubmitting}
+            aria-busy={oauthSubmitting === "google"}
+          >
+            {oauthSubmitting === "google" ? (
+              <CircleNotchIcon
+                size={16}
+                className="animate-spin"
+                aria-hidden
+              />
+            ) : (
+              <GoogleLogoIcon size={16} aria-hidden />
+            )}
+            {oauthSubmitting === "google"
+              ? "Redirecting to Google…"
+              : "Continue with Google"}
+          </Button>
+        </div>
+        <p className="text-muted-foreground text-center text-xs">
+          You&apos;ll open GitHub or Google in this tab, then return here after
+          you approve access.
+        </p>
+        <p className="text-muted-foreground text-center text-xs">
+          Or continue with your email and password
+        </p>
         {authError ? (
           <Alert variant="destructive">
             <SignInIcon size={16} weight="regular" />

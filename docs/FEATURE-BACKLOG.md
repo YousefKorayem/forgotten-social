@@ -30,7 +30,8 @@
 
 ### GitHub / Google OAuth
 
-- **Type:** Deferred roadmap item from `docs/PLAN.md`.
+- **Status:** **Shipped** (2026-05) — providers + provisioning in `lib/auth.ts`, sign-in UI, README callback/env docs; see `docs/PLAN.md` YAML **`auth`** and [PR #17](https://github.com/YousefKorayem/forgotten-social/pull/17) (or merge commit on `main`).
+- **Type:** Was a deferred roadmap item from `docs/PLAN.md`; kept here for follow-up ideas (account linking, more providers).
 - **Why:** Shows Auth.js provider configuration, account provisioning, callback handling, and env management.
 - **Suggested scope:** Implement providers in `lib/auth.ts`, add required env docs, and ensure OAuth-created users get stable usernames.
 - **Acceptance checks:**
@@ -40,7 +41,8 @@
 
 ### Route protection via `proxy.ts`
 
-- **Type:** Deferred roadmap item from `docs/PLAN.md`.
+- **Status:** **Shipped** (2026-05) — write API routes gated at edge with `401` JSON; see `docs/PLAN.md` YAML **`middleware`** and [PR #17](https://github.com/YousefKorayem/forgotten-social/pull/17). Optional follow-up: protect UI routes when you add them.
+- **Type:** Was a deferred roadmap item from `docs/PLAN.md`.
 - **Why:** Shows Next.js 16 middleware/proxy knowledge and Edge-runtime constraints.
 - **Suggested scope:** Populate protected routes for write APIs and any protected UI routes, using the existing edge-safe auth split.
 - **Acceptance checks:**

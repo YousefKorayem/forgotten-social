@@ -4,10 +4,12 @@ import mongoose from "mongoose";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import {
+  cursorOlderThanFilter,
   DEFAULT_LIMIT,
+  encodeFeedCursor,
   feedLimitSchema,
   LeanPost,
-  parseCursorParam,
+  parseFeedCursor,
   serializePost,
 } from "@/lib/post-feed-shared";
 import Follow from "@/models/Follow";
@@ -32,7 +34,7 @@ export async function GET(request: Request) {
   const viewerId = new mongoose.Types.ObjectId(session.user.id);
 
   const { searchParams } = new URL(request.url);
-  const cursorResult = parseCursorParam(searchParams.get("cursor"));
+  const cursorResult = parseFeedCursor(searchParams.get("cursor"));
   if (!cursorResult.ok) {
     return NextResponse.json({ error: "Invalid cursor" }, { status: 400 });
   }
@@ -67,13 +69,13 @@ export async function GET(request: Request) {
 
     const filter: Record<string, unknown> = {
       author: { $in: followingIds },
+      ...(cursorResult.before != null
+        ? cursorOlderThanFilter(cursorResult.before)
+        : {}),
     };
-    if (cursorResult.cursorId != null) {
-      filter._id = { $lt: cursorResult.cursorId };
-    }
 
     const items = (await Post.find(filter)
-      .sort({ _id: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .limit(limit + 1)
       .populate<{ username: string; name: string; image?: string }>({
         path: "author",
@@ -86,7 +88,9 @@ export async function GET(request: Request) {
     const page = hasMore ? items.slice(0, limit) : items;
     const last = page.at(-1);
     const nextCursor =
-      hasMore && last != null ? last._id.toString() : null;
+      hasMore && last != null
+        ? encodeFeedCursor(last.createdAt, last._id)
+        : null;
 
     let likedIds = new Set<string>();
     if (page.length > 0) {
