@@ -31,6 +31,7 @@
 - [ ] `git checkout main && git pull origin main`, then `npm install`.
 - [ ] `npm audit` reviewed. Latest triage (2026-05): **`npm audit fix`** cleared **2** of **4** moderate findings (remaining **2** are transitive PostCSS via **Next** — defer bump until Next ships patched nested dependency; see [PLAN.md](PLAN.md) § Gotchas).
 - [ ] `.env.local` contains `MONGODB_URI`, `AUTH_SECRET`, `AUTH_URL`; Atlas IP Access List allows your current IP.
+- [ ] For OAuth smoke tests, `.env.local` also has GitHub/Google client credentials per [`README.md`](../README.md) (`AUTH_GITHUB_*`, `AUTH_GOOGLE_*` or documented aliases); callback URLs match the running origin (port + `http`/`https`).
 - [ ] `npm run dev` boots cleanly — no Mongoose connection error, no Tailwind/Geist warning, no NextAuth config error.
 - [ ] `npx tsc --noEmit` → exit 0.
 - [ ] `npm run build` → success; route list includes `/`, `/sign-in`, `/sign-up`, `/[username]`, `/_not-found`, `/api/posts`, `/api/posts/feed`, `/api/posts/[id]/like`, `/api/users/[username]/follow`, `/api/auth/register`, `/api/auth/[...nextauth]`.
@@ -59,6 +60,7 @@
 
 - [ ] Signed-out `/` shows feed but **no composer**, and the **Following** tab is hidden.
 - [ ] Signed in as `alice`, composer is visible. Submit a post → it appears at the top of "For you" without a full reload.
+- [ ] **Compose while feed still loading** — immediately after hard refresh on `/`, post once the composer is usable; the new post must stay visible at the top after the initial feed request finishes (no “disappearing post”).
 - [ ] **Length validation** — try empty content and >280 chars → submit blocked with a clear error.
 - [ ] **Whitespace-only** content rejected.
 - [ ] **Composer success feedback** appears (per the polish slice) and clears on next compose.
@@ -117,7 +119,7 @@ Use two windows (`alice` signed in, `bob` signed in incognito).
 - [ ] Avatar dropdown shows correct username/name.
 - [x] **Profile** link in the dropdown (if present) goes to `/[your-username]`.
 - [x] **Sign out** clears session immediately and redirects sensibly.
-- [ ] No hydration warning in the dev console on initial paint of the header (the Auth UI report flagged a brief one — worth re-checking).
+- [ ] No hydration warning in the dev console on initial paint of the header or **signed-out composer “Sign in” link** (`callbackUrl` must match server vs client — re-check after OAuth/sign-in changes).
 
 ## 9. Responsive / visual
 
@@ -137,7 +139,7 @@ Use two windows (`alice` signed in, `bob` signed in incognito).
   - `POST /api/posts` without auth is blocked by `proxy.ts` (401 JSON) before route logic.
   - `POST /api/posts/[id]/like` and `DELETE /api/posts/[id]/like` without auth → 401.
   - `POST /api/users/:username/follow` and `DELETE /api/users/:username/follow` without auth → 401.
-  - `GET /api/posts` and `GET /api/posts/feed` remain accessible when signed out.
+  - `GET /api/posts` remains accessible when signed out; `GET /api/posts/feed` returns **401** when signed out (following feed requires a session).
   - `POST /api/auth/register` and `/api/auth/*` remain reachable while signed out.
   - `POST /api/posts` with auth + invalid body → 400 with zod error.
   - `GET /api/posts?cursor=garbage` → 400.
@@ -146,6 +148,10 @@ Use two windows (`alice` signed in, `bob` signed in incognito).
 ---
 
 ## Issues found
+
+### 2026-05-09 — Composer `callbackUrl` hydration mismatch; new post missing after compose
+
+- **Status:** **Resolved** — `components/composer.tsx` builds `/sign-in?callbackUrl=…` with `usePathname()` + `URLSearchParams` (no `window` SSR branch). `components/feed-list.tsx` merges the initial fetch with locally injected posts so a post created before the first feed response completes is not dropped.
 
 ### 2026-05-08 — Browser Back sometimes leaves the app blank / unloaded
 

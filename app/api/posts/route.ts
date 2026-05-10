@@ -5,10 +5,12 @@ import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import { requireExistingUserBySessionUserId } from "@/lib/require-session-user";
 import {
+  cursorOlderThanFilter,
   DEFAULT_LIMIT,
+  encodeFeedCursor,
   feedLimitSchema,
   LeanPost,
-  parseCursorParam,
+  parseFeedCursor,
   serializePost,
 } from "@/lib/post-feed-shared";
 import Like from "@/models/Like";
@@ -85,7 +87,7 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const cursorResult = parseCursorParam(searchParams.get("cursor"));
+  const cursorResult = parseFeedCursor(searchParams.get("cursor"));
   if (!cursorResult.ok) {
     return NextResponse.json({ error: "Invalid cursor" }, { status: 400 });
   }
@@ -112,12 +114,10 @@ export async function GET(request: Request) {
         : null;
 
     const filter =
-      cursorResult.cursorId != null
-        ? { _id: { $lt: cursorResult.cursorId } }
-        : {};
+      cursorResult.before != null ? cursorOlderThanFilter(cursorResult.before) : {};
 
     const items = (await Post.find(filter)
-      .sort({ _id: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .limit(limit + 1)
       .populate<{ username: string; name: string; image?: string }>({
         path: "author",
@@ -128,8 +128,11 @@ export async function GET(request: Request) {
 
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
+    const last = page.length > 0 ? page[page.length - 1] : null;
     const nextCursor =
-      hasMore && page.length > 0 ? page[page.length - 1]._id.toString() : null;
+      hasMore && last != null
+        ? encodeFeedCursor(last.createdAt, last._id)
+        : null;
 
     let likedIds = new Set<string>();
     if (viewerId != null && page.length > 0) {

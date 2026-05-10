@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  CircleNotchIcon,
   GithubLogoIcon,
   GoogleLogoIcon,
   SignInIcon,
@@ -85,8 +86,15 @@ export function SignInForm({ callbackUrl, errorCode }: SignInFormProps) {
   async function onOAuthSignIn(provider: "github" | "google") {
     setAuthError(null);
     setOauthSubmitting(provider);
-    await signIn(provider, { callbackUrl });
-    setOauthSubmitting(null);
+    try {
+      /**
+       * Full-page redirect is required for a reliable OAuth/PKCE flow; the
+       * provider sends the user back to callbackUrl after approval.
+       */
+      await signIn(provider, { callbackUrl });
+    } finally {
+      setOauthSubmitting(null);
+    }
   }
 
   return (
@@ -102,24 +110,50 @@ export function SignInForm({ callbackUrl, errorCode }: SignInFormProps) {
           <Button
             type="button"
             variant="outline"
-            className="min-h-10 w-full"
+            className="min-h-10 w-full gap-2"
             onClick={() => onOAuthSignIn("github")}
             disabled={oauthSubmitting !== null || form.formState.isSubmitting}
+            aria-busy={oauthSubmitting === "github"}
           >
-            <GithubLogoIcon size={16} />
-            Continue with GitHub
+            {oauthSubmitting === "github" ? (
+              <CircleNotchIcon
+                size={16}
+                className="animate-spin"
+                aria-hidden
+              />
+            ) : (
+              <GithubLogoIcon size={16} aria-hidden />
+            )}
+            {oauthSubmitting === "github"
+              ? "Redirecting to GitHub…"
+              : "Continue with GitHub"}
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="min-h-10 w-full"
+            className="min-h-10 w-full gap-2"
             onClick={() => onOAuthSignIn("google")}
             disabled={oauthSubmitting !== null || form.formState.isSubmitting}
+            aria-busy={oauthSubmitting === "google"}
           >
-            <GoogleLogoIcon size={16} />
-            Continue with Google
+            {oauthSubmitting === "google" ? (
+              <CircleNotchIcon
+                size={16}
+                className="animate-spin"
+                aria-hidden
+              />
+            ) : (
+              <GoogleLogoIcon size={16} aria-hidden />
+            )}
+            {oauthSubmitting === "google"
+              ? "Redirecting to Google…"
+              : "Continue with Google"}
           </Button>
         </div>
+        <p className="text-muted-foreground text-center text-xs">
+          You&apos;ll open GitHub or Google in this tab, then return here after
+          you approve access.
+        </p>
         <p className="text-muted-foreground text-center text-xs">
           Or continue with your email and password
         </p>

@@ -47,15 +47,52 @@ export function serializePost(doc: LeanPost, likedByMe?: boolean) {
     : { ...row, likedByMe };
 }
 
-export function parseCursorParam(cursorParam: string | null):
-  | { ok: true; cursorId: null }
-  | { ok: true; cursorId: mongoose.Types.ObjectId }
+/** Cursor for newest-first feeds: wall-clock recency, not raw ObjectId order (seed data can use synthetic ids). */
+export type FeedCursorBefore = {
+  at: Date;
+  id: mongoose.Types.ObjectId;
+};
+
+export function encodeFeedCursor(at: Date, id: mongoose.Types.ObjectId): string {
+  return Buffer.from(
+    JSON.stringify({ t: at.getTime(), id: id.toString() }),
+    "utf8"
+  ).toString("base64url");
+}
+
+export function parseFeedCursor(cursorParam: string | null):
+  | { ok: true; before: null }
+  | { ok: true; before: FeedCursorBefore }
   | { ok: false } {
   if (cursorParam == null || cursorParam === "") {
-    return { ok: true, cursorId: null };
+    return { ok: true, before: null };
   }
-  if (!mongoose.Types.ObjectId.isValid(cursorParam)) {
+  try {
+    const raw = Buffer.from(cursorParam, "base64url").toString("utf8");
+    const parsed = JSON.parse(raw) as { t?: unknown; id?: unknown };
+    if (typeof parsed.t !== "number" || typeof parsed.id !== "string") {
+      return { ok: false };
+    }
+    if (!mongoose.Types.ObjectId.isValid(parsed.id)) {
+      return { ok: false };
+    }
+    return {
+      ok: true,
+      before: {
+        at: new Date(parsed.t),
+        id: new mongoose.Types.ObjectId(parsed.id),
+      },
+    };
+  } catch {
     return { ok: false };
   }
-  return { ok: true, cursorId: new mongoose.Types.ObjectId(cursorParam) };
+}
+
+export function cursorOlderThanFilter(before: FeedCursorBefore) {
+  return {
+    $or: [
+      { createdAt: { $lt: before.at } },
+      { createdAt: before.at, _id: { $lt: before.id } },
+    ],
+  };
 }

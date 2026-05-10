@@ -14,6 +14,16 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+/** Prefer AUTH_* names; fallbacks match common Google/GitHub console defaults. */
+const githubClientId =
+  process.env.AUTH_GITHUB_ID ?? process.env.GITHUB_ID;
+const githubClientSecret =
+  process.env.AUTH_GITHUB_SECRET ?? process.env.GITHUB_SECRET;
+const googleClientId =
+  process.env.AUTH_GOOGLE_ID ?? process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret =
+  process.env.AUTH_GOOGLE_SECRET ?? process.env.GOOGLE_CLIENT_SECRET;
+
 const OAUTH_USERNAME_MAX_ATTEMPTS = 5;
 const USERNAME_MIN_LENGTH = 3;
 const USERNAME_MAX_LENGTH = 20;
@@ -96,12 +106,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
     GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
+      clientId: githubClientId,
+      clientSecret: githubClientSecret,
     }),
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
     }),
     Credentials({
       credentials: {

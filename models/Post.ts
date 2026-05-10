@@ -35,6 +35,7 @@ const postSchema = new Schema<IPost>(
 
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ createdAt: -1 });
+postSchema.index({ createdAt: -1, _id: -1 });
 
 const Post: Model<IPost> =
   (mongoose.models.Post as Model<IPost>) ??
